@@ -24,4 +24,4 @@ Android uses application ID `com.iotaasce.stopmotion` with Android 10 as the min
 
 ## Status
 
-Phases 1 and 2 are implemented: the Flutter foundation, onboarding, durable local project storage, project library, thumbnail cache, and project management flows are available. Hosted Android and iOS build validation remains open in `docs/DEVELOPMENT_PHASES.md` until CI passes.
+Phases 1-3 are implemented: the Flutter foundation, onboarding, durable project library, camera workspace, journaled frame capture, batch import, capture tools, interval mode, and frame review are available. Physical Android/iOS camera and build evidence remains open in `docs/DEVELOPMENT_PHASES.md` until the device/toolchain gates run.

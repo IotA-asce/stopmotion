@@ -1,20 +1,24 @@
 import 'dart:io';
 
 typedef FileValidator = Future<bool> Function(File file);
+typedef FileTransformer = Future<void> Function(File file);
 typedef FileAcceptanceHook = Future<void> Function(FileAcceptancePoint point);
 
 enum FileAcceptancePoint { beforeCopy, afterCopy, afterValidation, afterRename }
 
 class AtomicFileStore {
-  const AtomicFileStore({this.validator, this.onPoint});
+  const AtomicFileStore({this.validator, this.transformer, this.onPoint});
 
   final FileValidator? validator;
+  final FileTransformer? transformer;
   final FileAcceptanceHook? onPoint;
 
   Future<File> accept({
     required File source,
     required File temporary,
     required File destination,
+    FileValidator? validate,
+    FileTransformer? transform,
   }) async {
     if (!await source.exists()) {
       throw FileSystemException('Source file does not exist.', source.path);
@@ -40,8 +44,14 @@ class AtomicFileStore {
       if (await copied.length() == 0) {
         throw const FormatException('Media file is empty.');
       }
-      if (validator != null && !await validator!(copied)) {
+      final FileValidator? activeValidator = validate ?? validator;
+      final FileTransformer? activeTransformer = transform ?? transformer;
+      if (activeValidator != null && !await activeValidator(copied)) {
         throw const FormatException('Media file validation failed.');
+      }
+      await activeTransformer?.call(copied);
+      if (activeValidator != null && !await activeValidator(copied)) {
+        throw const FormatException('Transformed media validation failed.');
       }
       await onPoint?.call(FileAcceptancePoint.afterValidation);
 
@@ -57,6 +67,9 @@ class AtomicFileStore {
     } on Object {
       if (await temporary.exists()) {
         await temporary.delete();
+      }
+      if (await destination.exists()) {
+        await destination.delete();
       }
       rethrow;
     }

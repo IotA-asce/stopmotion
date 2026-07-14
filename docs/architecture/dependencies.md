@@ -22,6 +22,10 @@
 | `shared_preferences` | `^2.5.5` | flutter.dev | Small onboarding completion preference | Context7 Flutter packages documentation |
 | `uuid` | `^4.5.3` | Dart community | Collision-resistant local entity and journal IDs | Package API and locked resolution |
 | `image` | `^4.9.1` | Brendan Duncan | Validated image decoding, EXIF orientation, and bounded JPEG thumbnails | Context7 `/brendan-duncan/image` documentation |
+| `camera` | `^0.12.0+2` | flutter.dev | Camera preview, JPEG capture, focus/exposure, zoom, flash, and camera switching behind `CameraService` | Context7 `/websites/pub_dev_packages_camera` documentation |
+| `image_picker` | `^1.2.3` | flutter.dev | Single/batch system image selection and Android lost-data recovery | Context7 `/flutter/packages` documentation |
+| `permission_handler` | `^12.0.3` | Baseflow | Opens system app settings after camera denial; does not request permissions during onboarding | Context7 `/baseflow/flutter-permission-handler` documentation |
+| `wakelock_plus` | `^1.6.1` | Flutter Community | Capture-workspace wake lock with explicit interval start/stop ownership | Context7 `/fluttercommunity/wakelock_plus` documentation |
 
 ## Development Packages
 
