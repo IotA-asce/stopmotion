@@ -157,13 +157,13 @@
 **Plan mapping:** Tasks 13-14
 
 - [ ] Define audio service, audio timeline, clip, track-limit, and mixer contracts.
-- [ ] Implement microphone permission and denied states without blocking imported audio.
-- [ ] Implement narration count-in, level meter, record, pause, resume, and stop.
-- [ ] Implement project-owned audio import and unreadable-file recovery.
-- [ ] Implement waveform generation with bounded cache and cancellation.
-- [ ] Implement clip position, trim, split, duplicate, delete, rename, mute, and volume.
-- [ ] Implement fade-in, fade-out, project master volume, and track limits.
-- [ ] Implement accessible numeric alternatives to timeline trim and positioning gestures.
+- [x] Implement microphone permission and denied states without blocking imported audio.
+- [x] Implement narration count-in, level meter, record, pause, resume, and stop.
+- [x] Implement project-owned audio import and unreadable-file recovery.
+- [x] Implement waveform generation with bounded cache and cancellation.
+- [x] Implement clip position, trim, split, duplicate, delete, rename, mute, and volume.
+- [x] Implement fade-in, fade-out, project master volume, and track limits.
+- [x] Implement accessible numeric alternatives to timeline trim and positioning gestures.
 - [ ] Implement mixed preview playback with audio as authoritative clock.
 - [ ] Handle seek, pause, loop, app lifecycle, audio focus, headphones, and route changes.
 - [ ] Add audio domain, permission, recovery, mixing, lifecycle, and synchronization tests.

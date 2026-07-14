@@ -13,6 +13,8 @@ class ProjectRecords extends Table {
   TextColumn get status => text()();
   IntColumn get currentRevision => integer().withDefault(const Constant(0))();
   IntColumn get lastExportedRevision => integer().nullable()();
+  RealColumn get masterVolume => real().withDefault(const Constant(1.0))();
+  BoolColumn get audioMuted => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
@@ -51,6 +53,7 @@ class AudioClipRecords extends Table {
   IntColumn get fadeOutMilliseconds =>
       integer().withDefault(const Constant(0))();
   BoolColumn get muted => boolean().withDefault(const Constant(false))();
+  BoolColumn get missing => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};

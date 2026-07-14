@@ -139,6 +139,33 @@ class $ProjectRecordsTable extends ProjectRecords
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _masterVolumeMeta = const VerificationMeta(
+    'masterVolume',
+  );
+  @override
+  late final GeneratedColumn<double> masterVolume = GeneratedColumn<double>(
+    'master_volume',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1.0),
+  );
+  static const VerificationMeta _audioMutedMeta = const VerificationMeta(
+    'audioMuted',
+  );
+  @override
+  late final GeneratedColumn<bool> audioMuted = GeneratedColumn<bool>(
+    'audio_muted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("audio_muted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -153,6 +180,8 @@ class $ProjectRecordsTable extends ProjectRecords
     status,
     currentRevision,
     lastExportedRevision,
+    masterVolume,
+    audioMuted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -268,6 +297,21 @@ class $ProjectRecordsTable extends ProjectRecords
         ),
       );
     }
+    if (data.containsKey('master_volume')) {
+      context.handle(
+        _masterVolumeMeta,
+        masterVolume.isAcceptableOrUnknown(
+          data['master_volume']!,
+          _masterVolumeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('audio_muted')) {
+      context.handle(
+        _audioMutedMeta,
+        audioMuted.isAcceptableOrUnknown(data['audio_muted']!, _audioMutedMeta),
+      );
+    }
     return context;
   }
 
@@ -325,6 +369,14 @@ class $ProjectRecordsTable extends ProjectRecords
         DriftSqlType.int,
         data['${effectivePrefix}last_exported_revision'],
       ),
+      masterVolume: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}master_volume'],
+      )!,
+      audioMuted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}audio_muted'],
+      )!,
     );
   }
 
@@ -347,6 +399,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
   final String status;
   final int currentRevision;
   final int? lastExportedRevision;
+  final double masterVolume;
+  final bool audioMuted;
   const ProjectRecord({
     required this.id,
     required this.title,
@@ -360,6 +414,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
     required this.status,
     required this.currentRevision,
     this.lastExportedRevision,
+    required this.masterVolume,
+    required this.audioMuted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -380,6 +436,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
     if (!nullToAbsent || lastExportedRevision != null) {
       map['last_exported_revision'] = Variable<int>(lastExportedRevision);
     }
+    map['master_volume'] = Variable<double>(masterVolume);
+    map['audio_muted'] = Variable<bool>(audioMuted);
     return map;
   }
 
@@ -401,6 +459,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
       lastExportedRevision: lastExportedRevision == null && nullToAbsent
           ? const Value.absent()
           : Value(lastExportedRevision),
+      masterVolume: Value(masterVolume),
+      audioMuted: Value(audioMuted),
     );
   }
 
@@ -424,6 +484,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
       lastExportedRevision: serializer.fromJson<int?>(
         json['lastExportedRevision'],
       ),
+      masterVolume: serializer.fromJson<double>(json['masterVolume']),
+      audioMuted: serializer.fromJson<bool>(json['audioMuted']),
     );
   }
   @override
@@ -442,6 +504,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
       'status': serializer.toJson<String>(status),
       'currentRevision': serializer.toJson<int>(currentRevision),
       'lastExportedRevision': serializer.toJson<int?>(lastExportedRevision),
+      'masterVolume': serializer.toJson<double>(masterVolume),
+      'audioMuted': serializer.toJson<bool>(audioMuted),
     };
   }
 
@@ -458,6 +522,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
     String? status,
     int? currentRevision,
     Value<int?> lastExportedRevision = const Value.absent(),
+    double? masterVolume,
+    bool? audioMuted,
   }) => ProjectRecord(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -473,6 +539,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
     lastExportedRevision: lastExportedRevision.present
         ? lastExportedRevision.value
         : this.lastExportedRevision,
+    masterVolume: masterVolume ?? this.masterVolume,
+    audioMuted: audioMuted ?? this.audioMuted,
   );
   ProjectRecord copyWithCompanion(ProjectRecordsCompanion data) {
     return ProjectRecord(
@@ -500,6 +568,12 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
       lastExportedRevision: data.lastExportedRevision.present
           ? data.lastExportedRevision.value
           : this.lastExportedRevision,
+      masterVolume: data.masterVolume.present
+          ? data.masterVolume.value
+          : this.masterVolume,
+      audioMuted: data.audioMuted.present
+          ? data.audioMuted.value
+          : this.audioMuted,
     );
   }
 
@@ -517,7 +591,9 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
           ..write('deletedAt: $deletedAt, ')
           ..write('status: $status, ')
           ..write('currentRevision: $currentRevision, ')
-          ..write('lastExportedRevision: $lastExportedRevision')
+          ..write('lastExportedRevision: $lastExportedRevision, ')
+          ..write('masterVolume: $masterVolume, ')
+          ..write('audioMuted: $audioMuted')
           ..write(')'))
         .toString();
   }
@@ -536,6 +612,8 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
     status,
     currentRevision,
     lastExportedRevision,
+    masterVolume,
+    audioMuted,
   );
   @override
   bool operator ==(Object other) =>
@@ -552,7 +630,9 @@ class ProjectRecord extends DataClass implements Insertable<ProjectRecord> {
           other.deletedAt == this.deletedAt &&
           other.status == this.status &&
           other.currentRevision == this.currentRevision &&
-          other.lastExportedRevision == this.lastExportedRevision);
+          other.lastExportedRevision == this.lastExportedRevision &&
+          other.masterVolume == this.masterVolume &&
+          other.audioMuted == this.audioMuted);
 }
 
 class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
@@ -568,6 +648,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
   final Value<String> status;
   final Value<int> currentRevision;
   final Value<int?> lastExportedRevision;
+  final Value<double> masterVolume;
+  final Value<bool> audioMuted;
   final Value<int> rowid;
   const ProjectRecordsCompanion({
     this.id = const Value.absent(),
@@ -582,6 +664,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
     this.status = const Value.absent(),
     this.currentRevision = const Value.absent(),
     this.lastExportedRevision = const Value.absent(),
+    this.masterVolume = const Value.absent(),
+    this.audioMuted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ProjectRecordsCompanion.insert({
@@ -597,6 +681,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
     required String status,
     this.currentRevision = const Value.absent(),
     this.lastExportedRevision = const Value.absent(),
+    this.masterVolume = const Value.absent(),
+    this.audioMuted = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -620,6 +706,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
     Expression<String>? status,
     Expression<int>? currentRevision,
     Expression<int>? lastExportedRevision,
+    Expression<double>? masterVolume,
+    Expression<bool>? audioMuted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -636,6 +724,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
       if (currentRevision != null) 'current_revision': currentRevision,
       if (lastExportedRevision != null)
         'last_exported_revision': lastExportedRevision,
+      if (masterVolume != null) 'master_volume': masterVolume,
+      if (audioMuted != null) 'audio_muted': audioMuted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -653,6 +743,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
     Value<String>? status,
     Value<int>? currentRevision,
     Value<int?>? lastExportedRevision,
+    Value<double>? masterVolume,
+    Value<bool>? audioMuted,
     Value<int>? rowid,
   }) {
     return ProjectRecordsCompanion(
@@ -668,6 +760,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
       status: status ?? this.status,
       currentRevision: currentRevision ?? this.currentRevision,
       lastExportedRevision: lastExportedRevision ?? this.lastExportedRevision,
+      masterVolume: masterVolume ?? this.masterVolume,
+      audioMuted: audioMuted ?? this.audioMuted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -711,6 +805,12 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
     if (lastExportedRevision.present) {
       map['last_exported_revision'] = Variable<int>(lastExportedRevision.value);
     }
+    if (masterVolume.present) {
+      map['master_volume'] = Variable<double>(masterVolume.value);
+    }
+    if (audioMuted.present) {
+      map['audio_muted'] = Variable<bool>(audioMuted.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -732,6 +832,8 @@ class ProjectRecordsCompanion extends UpdateCompanion<ProjectRecord> {
           ..write('status: $status, ')
           ..write('currentRevision: $currentRevision, ')
           ..write('lastExportedRevision: $lastExportedRevision, ')
+          ..write('masterVolume: $masterVolume, ')
+          ..write('audioMuted: $audioMuted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1507,6 +1609,21 @@ class $AudioClipRecordsTable extends AudioClipRecords
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _missingMeta = const VerificationMeta(
+    'missing',
+  );
+  @override
+  late final GeneratedColumn<bool> missing = GeneratedColumn<bool>(
+    'missing',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("missing" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1521,6 +1638,7 @@ class $AudioClipRecordsTable extends AudioClipRecords
     fadeInMilliseconds,
     fadeOutMilliseconds,
     muted,
+    missing,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1637,6 +1755,12 @@ class $AudioClipRecordsTable extends AudioClipRecords
         muted.isAcceptableOrUnknown(data['muted']!, _mutedMeta),
       );
     }
+    if (data.containsKey('missing')) {
+      context.handle(
+        _missingMeta,
+        missing.isAcceptableOrUnknown(data['missing']!, _missingMeta),
+      );
+    }
     return context;
   }
 
@@ -1694,6 +1818,10 @@ class $AudioClipRecordsTable extends AudioClipRecords
         DriftSqlType.bool,
         data['${effectivePrefix}muted'],
       )!,
+      missing: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}missing'],
+      )!,
     );
   }
 
@@ -1716,6 +1844,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
   final int fadeInMilliseconds;
   final int fadeOutMilliseconds;
   final bool muted;
+  final bool missing;
   const AudioClipRecord({
     required this.id,
     required this.projectId,
@@ -1729,6 +1858,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
     required this.fadeInMilliseconds,
     required this.fadeOutMilliseconds,
     required this.muted,
+    required this.missing,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1745,6 +1875,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
     map['fade_in_milliseconds'] = Variable<int>(fadeInMilliseconds);
     map['fade_out_milliseconds'] = Variable<int>(fadeOutMilliseconds);
     map['muted'] = Variable<bool>(muted);
+    map['missing'] = Variable<bool>(missing);
     return map;
   }
 
@@ -1762,6 +1893,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
       fadeInMilliseconds: Value(fadeInMilliseconds),
       fadeOutMilliseconds: Value(fadeOutMilliseconds),
       muted: Value(muted),
+      missing: Value(missing),
     );
   }
 
@@ -1791,6 +1923,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
         json['fadeOutMilliseconds'],
       ),
       muted: serializer.fromJson<bool>(json['muted']),
+      missing: serializer.fromJson<bool>(json['missing']),
     );
   }
   @override
@@ -1809,6 +1942,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
       'fadeInMilliseconds': serializer.toJson<int>(fadeInMilliseconds),
       'fadeOutMilliseconds': serializer.toJson<int>(fadeOutMilliseconds),
       'muted': serializer.toJson<bool>(muted),
+      'missing': serializer.toJson<bool>(missing),
     };
   }
 
@@ -1825,6 +1959,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
     int? fadeInMilliseconds,
     int? fadeOutMilliseconds,
     bool? muted,
+    bool? missing,
   }) => AudioClipRecord(
     id: id ?? this.id,
     projectId: projectId ?? this.projectId,
@@ -1838,6 +1973,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
     fadeInMilliseconds: fadeInMilliseconds ?? this.fadeInMilliseconds,
     fadeOutMilliseconds: fadeOutMilliseconds ?? this.fadeOutMilliseconds,
     muted: muted ?? this.muted,
+    missing: missing ?? this.missing,
   );
   AudioClipRecord copyWithCompanion(AudioClipRecordsCompanion data) {
     return AudioClipRecord(
@@ -1865,6 +2001,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
           ? data.fadeOutMilliseconds.value
           : this.fadeOutMilliseconds,
       muted: data.muted.present ? data.muted.value : this.muted,
+      missing: data.missing.present ? data.missing.value : this.missing,
     );
   }
 
@@ -1882,7 +2019,8 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
           ..write('volume: $volume, ')
           ..write('fadeInMilliseconds: $fadeInMilliseconds, ')
           ..write('fadeOutMilliseconds: $fadeOutMilliseconds, ')
-          ..write('muted: $muted')
+          ..write('muted: $muted, ')
+          ..write('missing: $missing')
           ..write(')'))
         .toString();
   }
@@ -1901,6 +2039,7 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
     fadeInMilliseconds,
     fadeOutMilliseconds,
     muted,
+    missing,
   );
   @override
   bool operator ==(Object other) =>
@@ -1917,7 +2056,8 @@ class AudioClipRecord extends DataClass implements Insertable<AudioClipRecord> {
           other.volume == this.volume &&
           other.fadeInMilliseconds == this.fadeInMilliseconds &&
           other.fadeOutMilliseconds == this.fadeOutMilliseconds &&
-          other.muted == this.muted);
+          other.muted == this.muted &&
+          other.missing == this.missing);
 }
 
 class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
@@ -1933,6 +2073,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
   final Value<int> fadeInMilliseconds;
   final Value<int> fadeOutMilliseconds;
   final Value<bool> muted;
+  final Value<bool> missing;
   final Value<int> rowid;
   const AudioClipRecordsCompanion({
     this.id = const Value.absent(),
@@ -1947,6 +2088,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
     this.fadeInMilliseconds = const Value.absent(),
     this.fadeOutMilliseconds = const Value.absent(),
     this.muted = const Value.absent(),
+    this.missing = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AudioClipRecordsCompanion.insert({
@@ -1962,6 +2104,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
     this.fadeInMilliseconds = const Value.absent(),
     this.fadeOutMilliseconds = const Value.absent(),
     this.muted = const Value.absent(),
+    this.missing = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        projectId = Value(projectId),
@@ -1984,6 +2127,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
     Expression<int>? fadeInMilliseconds,
     Expression<int>? fadeOutMilliseconds,
     Expression<bool>? muted,
+    Expression<bool>? missing,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2004,6 +2148,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
       if (fadeOutMilliseconds != null)
         'fade_out_milliseconds': fadeOutMilliseconds,
       if (muted != null) 'muted': muted,
+      if (missing != null) 'missing': missing,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2021,6 +2166,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
     Value<int>? fadeInMilliseconds,
     Value<int>? fadeOutMilliseconds,
     Value<bool>? muted,
+    Value<bool>? missing,
     Value<int>? rowid,
   }) {
     return AudioClipRecordsCompanion(
@@ -2037,6 +2183,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
       fadeInMilliseconds: fadeInMilliseconds ?? this.fadeInMilliseconds,
       fadeOutMilliseconds: fadeOutMilliseconds ?? this.fadeOutMilliseconds,
       muted: muted ?? this.muted,
+      missing: missing ?? this.missing,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2082,6 +2229,9 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
     if (muted.present) {
       map['muted'] = Variable<bool>(muted.value);
     }
+    if (missing.present) {
+      map['missing'] = Variable<bool>(missing.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2103,6 +2253,7 @@ class AudioClipRecordsCompanion extends UpdateCompanion<AudioClipRecord> {
           ..write('fadeInMilliseconds: $fadeInMilliseconds, ')
           ..write('fadeOutMilliseconds: $fadeOutMilliseconds, ')
           ..write('muted: $muted, ')
+          ..write('missing: $missing, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3322,6 +3473,8 @@ typedef $$ProjectRecordsTableCreateCompanionBuilder =
       required String status,
       Value<int> currentRevision,
       Value<int?> lastExportedRevision,
+      Value<double> masterVolume,
+      Value<bool> audioMuted,
       Value<int> rowid,
     });
 typedef $$ProjectRecordsTableUpdateCompanionBuilder =
@@ -3338,6 +3491,8 @@ typedef $$ProjectRecordsTableUpdateCompanionBuilder =
       Value<String> status,
       Value<int> currentRevision,
       Value<int?> lastExportedRevision,
+      Value<double> masterVolume,
+      Value<bool> audioMuted,
       Value<int> rowid,
     });
 
@@ -3472,6 +3627,16 @@ class $$ProjectRecordsTableFilterComposer
 
   ColumnFilters<int> get lastExportedRevision => $composableBuilder(
     column: $table.lastExportedRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get masterVolume => $composableBuilder(
+    column: $table.masterVolume,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get audioMuted => $composableBuilder(
+    column: $table.audioMuted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3619,6 +3784,16 @@ class $$ProjectRecordsTableOrderingComposer
     column: $table.lastExportedRevision,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get masterVolume => $composableBuilder(
+    column: $table.masterVolume,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get audioMuted => $composableBuilder(
+    column: $table.audioMuted,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProjectRecordsTableAnnotationComposer
@@ -3675,6 +3850,16 @@ class $$ProjectRecordsTableAnnotationComposer
 
   GeneratedColumn<int> get lastExportedRevision => $composableBuilder(
     column: $table.lastExportedRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get masterVolume => $composableBuilder(
+    column: $table.masterVolume,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get audioMuted => $composableBuilder(
+    column: $table.audioMuted,
     builder: (column) => column,
   );
 
@@ -3800,6 +3985,8 @@ class $$ProjectRecordsTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<int> currentRevision = const Value.absent(),
                 Value<int?> lastExportedRevision = const Value.absent(),
+                Value<double> masterVolume = const Value.absent(),
+                Value<bool> audioMuted = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProjectRecordsCompanion(
                 id: id,
@@ -3814,6 +4001,8 @@ class $$ProjectRecordsTableTableManager
                 status: status,
                 currentRevision: currentRevision,
                 lastExportedRevision: lastExportedRevision,
+                masterVolume: masterVolume,
+                audioMuted: audioMuted,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3830,6 +4019,8 @@ class $$ProjectRecordsTableTableManager
                 required String status,
                 Value<int> currentRevision = const Value.absent(),
                 Value<int?> lastExportedRevision = const Value.absent(),
+                Value<double> masterVolume = const Value.absent(),
+                Value<bool> audioMuted = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProjectRecordsCompanion.insert(
                 id: id,
@@ -3844,6 +4035,8 @@ class $$ProjectRecordsTableTableManager
                 status: status,
                 currentRevision: currentRevision,
                 lastExportedRevision: lastExportedRevision,
+                masterVolume: masterVolume,
+                audioMuted: audioMuted,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4396,6 +4589,7 @@ typedef $$AudioClipRecordsTableCreateCompanionBuilder =
       Value<int> fadeInMilliseconds,
       Value<int> fadeOutMilliseconds,
       Value<bool> muted,
+      Value<bool> missing,
       Value<int> rowid,
     });
 typedef $$AudioClipRecordsTableUpdateCompanionBuilder =
@@ -4412,6 +4606,7 @@ typedef $$AudioClipRecordsTableUpdateCompanionBuilder =
       Value<int> fadeInMilliseconds,
       Value<int> fadeOutMilliseconds,
       Value<bool> muted,
+      Value<bool> missing,
       Value<int> rowid,
     });
 
@@ -4507,6 +4702,11 @@ class $$AudioClipRecordsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get missing => $composableBuilder(
+    column: $table.missing,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ProjectRecordsTableFilterComposer get projectId {
     final $$ProjectRecordsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4595,6 +4795,11 @@ class $$AudioClipRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get missing => $composableBuilder(
+    column: $table.missing,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ProjectRecordsTableOrderingComposer get projectId {
     final $$ProjectRecordsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4673,6 +4878,9 @@ class $$AudioClipRecordsTableAnnotationComposer
   GeneratedColumn<bool> get muted =>
       $composableBuilder(column: $table.muted, builder: (column) => column);
 
+  GeneratedColumn<bool> get missing =>
+      $composableBuilder(column: $table.missing, builder: (column) => column);
+
   $$ProjectRecordsTableAnnotationComposer get projectId {
     final $$ProjectRecordsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -4739,6 +4947,7 @@ class $$AudioClipRecordsTableTableManager
                 Value<int> fadeInMilliseconds = const Value.absent(),
                 Value<int> fadeOutMilliseconds = const Value.absent(),
                 Value<bool> muted = const Value.absent(),
+                Value<bool> missing = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AudioClipRecordsCompanion(
                 id: id,
@@ -4753,6 +4962,7 @@ class $$AudioClipRecordsTableTableManager
                 fadeInMilliseconds: fadeInMilliseconds,
                 fadeOutMilliseconds: fadeOutMilliseconds,
                 muted: muted,
+                missing: missing,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4769,6 +4979,7 @@ class $$AudioClipRecordsTableTableManager
                 Value<int> fadeInMilliseconds = const Value.absent(),
                 Value<int> fadeOutMilliseconds = const Value.absent(),
                 Value<bool> muted = const Value.absent(),
+                Value<bool> missing = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AudioClipRecordsCompanion.insert(
                 id: id,
@@ -4783,6 +4994,7 @@ class $$AudioClipRecordsTableTableManager
                 fadeInMilliseconds: fadeInMilliseconds,
                 fadeOutMilliseconds: fadeOutMilliseconds,
                 muted: muted,
+                missing: missing,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

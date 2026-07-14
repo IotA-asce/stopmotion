@@ -22,6 +22,8 @@ class Project {
     required this.frameCount,
     required this.durationFrames,
     required this.currentRevision,
+    this.masterVolume = 1,
+    this.audioMuted = false,
     this.lastExportedRevision,
     this.deletedAt,
   });
@@ -38,6 +40,8 @@ class Project {
   final int frameCount;
   final int durationFrames;
   final int currentRevision;
+  final double masterVolume;
+  final bool audioMuted;
   final int? lastExportedRevision;
   final DateTime? deletedAt;
 
@@ -55,6 +59,8 @@ class Project {
     int? frameCount,
     int? durationFrames,
     int? currentRevision,
+    double? masterVolume,
+    bool? audioMuted,
     int? lastExportedRevision,
     DateTime? deletedAt,
   }) {
@@ -71,6 +77,8 @@ class Project {
       frameCount: frameCount ?? this.frameCount,
       durationFrames: durationFrames ?? this.durationFrames,
       currentRevision: currentRevision ?? this.currentRevision,
+      masterVolume: masterVolume ?? this.masterVolume,
+      audioMuted: audioMuted ?? this.audioMuted,
       lastExportedRevision: lastExportedRevision ?? this.lastExportedRevision,
       deletedAt: deletedAt ?? this.deletedAt,
     );
