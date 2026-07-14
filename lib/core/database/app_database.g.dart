@@ -2329,6 +2329,29 @@ class $ExportRecordsTable extends ExportRecords
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _settingsJsonMeta = const VerificationMeta(
+    'settingsJson',
+  );
+  @override
+  late final GeneratedColumn<String> settingsJson = GeneratedColumn<String>(
+    'settings_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
   static const VerificationMeta _relativeOutputPathMeta =
       const VerificationMeta('relativeOutputPath');
   @override
@@ -2340,6 +2363,17 @@ class $ExportRecordsTable extends ExportRecords
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _outputBytesMeta = const VerificationMeta(
+    'outputBytes',
+  );
+  @override
+  late final GeneratedColumn<int> outputBytes = GeneratedColumn<int>(
+    'output_bytes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _errorCodeMeta = const VerificationMeta(
     'errorCode',
   );
@@ -2359,7 +2393,10 @@ class $ExportRecordsTable extends ExportRecords
     status,
     revision,
     createdAt,
+    updatedAt,
+    settingsJson,
     relativeOutputPath,
+    outputBytes,
     errorCode,
   ];
   @override
@@ -2419,12 +2456,36 @@ class $ExportRecordsTable extends ExportRecords
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('settings_json')) {
+      context.handle(
+        _settingsJsonMeta,
+        settingsJson.isAcceptableOrUnknown(
+          data['settings_json']!,
+          _settingsJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('relative_output_path')) {
       context.handle(
         _relativeOutputPathMeta,
         relativeOutputPath.isAcceptableOrUnknown(
           data['relative_output_path']!,
           _relativeOutputPathMeta,
+        ),
+      );
+    }
+    if (data.containsKey('output_bytes')) {
+      context.handle(
+        _outputBytesMeta,
+        outputBytes.isAcceptableOrUnknown(
+          data['output_bytes']!,
+          _outputBytesMeta,
         ),
       );
     }
@@ -2467,9 +2528,21 @@ class $ExportRecordsTable extends ExportRecords
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+      settingsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}settings_json'],
+      )!,
       relativeOutputPath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}relative_output_path'],
+      ),
+      outputBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}output_bytes'],
       ),
       errorCode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2491,7 +2564,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
   final String status;
   final int revision;
   final DateTime createdAt;
+  final DateTime? updatedAt;
+  final String settingsJson;
   final String? relativeOutputPath;
+  final int? outputBytes;
   final String? errorCode;
   const ExportRecord({
     required this.id,
@@ -2500,7 +2576,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
     required this.status,
     required this.revision,
     required this.createdAt,
+    this.updatedAt,
+    required this.settingsJson,
     this.relativeOutputPath,
+    this.outputBytes,
     this.errorCode,
   });
   @override
@@ -2512,8 +2591,15 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
     map['status'] = Variable<String>(status);
     map['revision'] = Variable<int>(revision);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    map['settings_json'] = Variable<String>(settingsJson);
     if (!nullToAbsent || relativeOutputPath != null) {
       map['relative_output_path'] = Variable<String>(relativeOutputPath);
+    }
+    if (!nullToAbsent || outputBytes != null) {
+      map['output_bytes'] = Variable<int>(outputBytes);
     }
     if (!nullToAbsent || errorCode != null) {
       map['error_code'] = Variable<String>(errorCode);
@@ -2529,9 +2615,16 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
       status: Value(status),
       revision: Value(revision),
       createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      settingsJson: Value(settingsJson),
       relativeOutputPath: relativeOutputPath == null && nullToAbsent
           ? const Value.absent()
           : Value(relativeOutputPath),
+      outputBytes: outputBytes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(outputBytes),
       errorCode: errorCode == null && nullToAbsent
           ? const Value.absent()
           : Value(errorCode),
@@ -2550,9 +2643,12 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
       status: serializer.fromJson<String>(json['status']),
       revision: serializer.fromJson<int>(json['revision']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      settingsJson: serializer.fromJson<String>(json['settingsJson']),
       relativeOutputPath: serializer.fromJson<String?>(
         json['relativeOutputPath'],
       ),
+      outputBytes: serializer.fromJson<int?>(json['outputBytes']),
       errorCode: serializer.fromJson<String?>(json['errorCode']),
     );
   }
@@ -2566,7 +2662,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
       'status': serializer.toJson<String>(status),
       'revision': serializer.toJson<int>(revision),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'settingsJson': serializer.toJson<String>(settingsJson),
       'relativeOutputPath': serializer.toJson<String?>(relativeOutputPath),
+      'outputBytes': serializer.toJson<int?>(outputBytes),
       'errorCode': serializer.toJson<String?>(errorCode),
     };
   }
@@ -2578,7 +2677,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
     String? status,
     int? revision,
     DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+    String? settingsJson,
     Value<String?> relativeOutputPath = const Value.absent(),
+    Value<int?> outputBytes = const Value.absent(),
     Value<String?> errorCode = const Value.absent(),
   }) => ExportRecord(
     id: id ?? this.id,
@@ -2587,9 +2689,12 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
     status: status ?? this.status,
     revision: revision ?? this.revision,
     createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    settingsJson: settingsJson ?? this.settingsJson,
     relativeOutputPath: relativeOutputPath.present
         ? relativeOutputPath.value
         : this.relativeOutputPath,
+    outputBytes: outputBytes.present ? outputBytes.value : this.outputBytes,
     errorCode: errorCode.present ? errorCode.value : this.errorCode,
   );
   ExportRecord copyWithCompanion(ExportRecordsCompanion data) {
@@ -2600,9 +2705,16 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
       status: data.status.present ? data.status.value : this.status,
       revision: data.revision.present ? data.revision.value : this.revision,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      settingsJson: data.settingsJson.present
+          ? data.settingsJson.value
+          : this.settingsJson,
       relativeOutputPath: data.relativeOutputPath.present
           ? data.relativeOutputPath.value
           : this.relativeOutputPath,
+      outputBytes: data.outputBytes.present
+          ? data.outputBytes.value
+          : this.outputBytes,
       errorCode: data.errorCode.present ? data.errorCode.value : this.errorCode,
     );
   }
@@ -2616,7 +2728,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
           ..write('status: $status, ')
           ..write('revision: $revision, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('settingsJson: $settingsJson, ')
           ..write('relativeOutputPath: $relativeOutputPath, ')
+          ..write('outputBytes: $outputBytes, ')
           ..write('errorCode: $errorCode')
           ..write(')'))
         .toString();
@@ -2630,7 +2745,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
     status,
     revision,
     createdAt,
+    updatedAt,
+    settingsJson,
     relativeOutputPath,
+    outputBytes,
     errorCode,
   );
   @override
@@ -2643,7 +2761,10 @@ class ExportRecord extends DataClass implements Insertable<ExportRecord> {
           other.status == this.status &&
           other.revision == this.revision &&
           other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.settingsJson == this.settingsJson &&
           other.relativeOutputPath == this.relativeOutputPath &&
+          other.outputBytes == this.outputBytes &&
           other.errorCode == this.errorCode);
 }
 
@@ -2654,7 +2775,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
   final Value<String> status;
   final Value<int> revision;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<String> settingsJson;
   final Value<String?> relativeOutputPath;
+  final Value<int?> outputBytes;
   final Value<String?> errorCode;
   final Value<int> rowid;
   const ExportRecordsCompanion({
@@ -2664,7 +2788,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
     this.status = const Value.absent(),
     this.revision = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.settingsJson = const Value.absent(),
     this.relativeOutputPath = const Value.absent(),
+    this.outputBytes = const Value.absent(),
     this.errorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2675,7 +2802,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
     required String status,
     required int revision,
     required DateTime createdAt,
+    this.updatedAt = const Value.absent(),
+    this.settingsJson = const Value.absent(),
     this.relativeOutputPath = const Value.absent(),
+    this.outputBytes = const Value.absent(),
     this.errorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -2691,7 +2821,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
     Expression<String>? status,
     Expression<int>? revision,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? settingsJson,
     Expression<String>? relativeOutputPath,
+    Expression<int>? outputBytes,
     Expression<String>? errorCode,
     Expression<int>? rowid,
   }) {
@@ -2702,8 +2835,11 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
       if (status != null) 'status': status,
       if (revision != null) 'revision': revision,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (settingsJson != null) 'settings_json': settingsJson,
       if (relativeOutputPath != null)
         'relative_output_path': relativeOutputPath,
+      if (outputBytes != null) 'output_bytes': outputBytes,
       if (errorCode != null) 'error_code': errorCode,
       if (rowid != null) 'rowid': rowid,
     });
@@ -2716,7 +2852,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
     Value<String>? status,
     Value<int>? revision,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<String>? settingsJson,
     Value<String?>? relativeOutputPath,
+    Value<int?>? outputBytes,
     Value<String?>? errorCode,
     Value<int>? rowid,
   }) {
@@ -2727,7 +2866,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
       status: status ?? this.status,
       revision: revision ?? this.revision,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      settingsJson: settingsJson ?? this.settingsJson,
       relativeOutputPath: relativeOutputPath ?? this.relativeOutputPath,
+      outputBytes: outputBytes ?? this.outputBytes,
       errorCode: errorCode ?? this.errorCode,
       rowid: rowid ?? this.rowid,
     );
@@ -2754,8 +2896,17 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (settingsJson.present) {
+      map['settings_json'] = Variable<String>(settingsJson.value);
+    }
     if (relativeOutputPath.present) {
       map['relative_output_path'] = Variable<String>(relativeOutputPath.value);
+    }
+    if (outputBytes.present) {
+      map['output_bytes'] = Variable<int>(outputBytes.value);
     }
     if (errorCode.present) {
       map['error_code'] = Variable<String>(errorCode.value);
@@ -2775,7 +2926,10 @@ class ExportRecordsCompanion extends UpdateCompanion<ExportRecord> {
           ..write('status: $status, ')
           ..write('revision: $revision, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('settingsJson: $settingsJson, ')
           ..write('relativeOutputPath: $relativeOutputPath, ')
+          ..write('outputBytes: $outputBytes, ')
           ..write('errorCode: $errorCode, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -5074,7 +5228,10 @@ typedef $$ExportRecordsTableCreateCompanionBuilder =
       required String status,
       required int revision,
       required DateTime createdAt,
+      Value<DateTime?> updatedAt,
+      Value<String> settingsJson,
       Value<String?> relativeOutputPath,
+      Value<int?> outputBytes,
       Value<String?> errorCode,
       Value<int> rowid,
     });
@@ -5086,7 +5243,10 @@ typedef $$ExportRecordsTableUpdateCompanionBuilder =
       Value<String> status,
       Value<int> revision,
       Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<String> settingsJson,
       Value<String?> relativeOutputPath,
+      Value<int?> outputBytes,
       Value<String?> errorCode,
       Value<int> rowid,
     });
@@ -5152,8 +5312,23 @@ class $$ExportRecordsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get settingsJson => $composableBuilder(
+    column: $table.settingsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get relativeOutputPath => $composableBuilder(
     column: $table.relativeOutputPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get outputBytes => $composableBuilder(
+    column: $table.outputBytes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5220,8 +5395,23 @@ class $$ExportRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get settingsJson => $composableBuilder(
+    column: $table.settingsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get relativeOutputPath => $composableBuilder(
     column: $table.relativeOutputPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get outputBytes => $composableBuilder(
+    column: $table.outputBytes,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5278,8 +5468,21 @@ class $$ExportRecordsTableAnnotationComposer
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get settingsJson => $composableBuilder(
+    column: $table.settingsJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get relativeOutputPath => $composableBuilder(
     column: $table.relativeOutputPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get outputBytes => $composableBuilder(
+    column: $table.outputBytes,
     builder: (column) => column,
   );
 
@@ -5344,7 +5547,10 @@ class $$ExportRecordsTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<int> revision = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String> settingsJson = const Value.absent(),
                 Value<String?> relativeOutputPath = const Value.absent(),
+                Value<int?> outputBytes = const Value.absent(),
                 Value<String?> errorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExportRecordsCompanion(
@@ -5354,7 +5560,10 @@ class $$ExportRecordsTableTableManager
                 status: status,
                 revision: revision,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
+                settingsJson: settingsJson,
                 relativeOutputPath: relativeOutputPath,
+                outputBytes: outputBytes,
                 errorCode: errorCode,
                 rowid: rowid,
               ),
@@ -5366,7 +5575,10 @@ class $$ExportRecordsTableTableManager
                 required String status,
                 required int revision,
                 required DateTime createdAt,
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String> settingsJson = const Value.absent(),
                 Value<String?> relativeOutputPath = const Value.absent(),
+                Value<int?> outputBytes = const Value.absent(),
                 Value<String?> errorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExportRecordsCompanion.insert(
@@ -5376,7 +5588,10 @@ class $$ExportRecordsTableTableManager
                 status: status,
                 revision: revision,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
+                settingsJson: settingsJson,
                 relativeOutputPath: relativeOutputPath,
+                outputBytes: outputBytes,
                 errorCode: errorCode,
                 rowid: rowid,
               ),

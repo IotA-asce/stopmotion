@@ -427,6 +427,15 @@ class _TimelineRegion extends StatelessWidget {
                         ),
                   icon: const Icon(Icons.fullscreen),
                 ),
+                IconButton(
+                  tooltip: 'Export project',
+                  onPressed: state.timeline!.isEmpty
+                      ? null
+                      : () => context.push(
+                          AppRoutes.export(controller.projectId),
+                        ),
+                  icon: const Icon(Icons.ios_share),
+                ),
               ],
             ),
           ),

@@ -21,6 +21,7 @@ class ProjectPaths {
   File get databaseFile => File(p.join(root.path, 'stop_motion.sqlite'));
   Directory get projectsRoot => Directory(p.join(root.path, 'projects'));
   Directory get operationRoot => Directory(p.join(root.path, 'operations'));
+  Directory get exportsRoot => Directory(p.join(root.path, 'exports'));
 
   Directory projectDirectory(String projectId) =>
       Directory(p.join(projectsRoot.path, projectId));
@@ -33,6 +34,12 @@ class ProjectPaths {
 
   Directory temporaryDirectory(String projectId) =>
       Directory(p.join(projectDirectory(projectId).path, '.tmp'));
+
+  Directory exportDirectory(String projectId) =>
+      Directory(p.join(exportsRoot.path, projectId));
+
+  Directory exportTemporaryDirectory(String projectId) =>
+      Directory(p.join(temporaryDirectory(projectId).path, 'exports'));
 
   Directory thumbnailDirectory(String projectId) =>
       Directory(p.join(cacheRoot.path, 'thumbnails', projectId));

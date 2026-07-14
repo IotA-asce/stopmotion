@@ -179,23 +179,25 @@
 
 **Plan mapping:** Tasks 15-17
 
-- [ ] Evaluate export engines for compatibility, maintenance, licensing, package size, progress, and cancellation.
+- [x] Evaluate export engines for compatibility, maintenance, licensing, package size, progress, and cancellation.
 - [ ] Prove H.264/AAC MP4 output on physical Android and iOS devices before selecting the final engine.
-- [ ] Implement export preflight for missing sources, dimensions, codecs, and storage.
+- [x] Implement export preflight for missing sources, dimensions, codecs, and storage.
 - [ ] Implement journaled export jobs, progress, cancellation, cleanup, and interruption recovery.
-- [ ] Implement 720p and 1080p MP4 rendering from current sources and edits.
-- [ ] Implement AAC mixing and audio synchronization in MP4 output.
-- [ ] Implement bounded-memory GIF export with timing and loop settings.
-- [ ] Implement PNG/JPEG image-sequence ZIP export with manifest.
-- [ ] Implement export presets, estimates, validation, and previous-setting reuse.
-- [ ] Implement system save, open, and share flows.
-- [ ] Implement export history and current-revision exported status.
-- [ ] Independently validate codecs, duration, fps, dimensions, timing, audio, GIF decoding, and archive contents.
+- [x] Implement 720p and 1080p MP4 rendering from current sources and edits.
+- [x] Implement AAC mixing and audio synchronization in MP4 output.
+- [x] Implement bounded-memory GIF export with timing and loop settings.
+- [x] Implement PNG/JPEG image-sequence ZIP export with manifest.
+- [x] Implement export presets, estimates, validation, and previous-setting reuse.
+- [x] Implement system save, open, and share flows.
+- [x] Implement export history and current-revision exported status.
+- [x] Independently validate codecs, duration, fps, dimensions, timing, audio, GIF decoding, and archive contents.
 
 **Phase gate:**
 
 - [ ] MP4, GIF, and image-sequence exports match editor preview and pass independent validation.
 - [ ] Cancelled or interrupted exports leave no corrupt output and never modify the project.
+
+**Phase 7 evidence:** Package-independent engine and handoff contracts are backed by the maintained LGPL minimal FFmpegKit variant, hardware H.264 encoder selection, AAC filter-graph mixing, FFprobe output checks, streaming ZIP creation, and journaled repository state. Automated fixtures cover preflight, frame holds, fades, offsets, loop behavior, audio exclusion, cancellation cleanup, archive contents, previous-setting reuse, history, and current-revision status. Physical Android/iOS codec playback and interruption drills remain open and prevent the phase gate from being checked.
 
 ## Phase 8: Recovery, Settings, Privacy, And Diagnostics
 

@@ -10,7 +10,10 @@ class ProjectExportRecord {
     required this.status,
     required this.revision,
     required this.createdAt,
+    required this.updatedAt,
+    required this.settingsJson,
     this.relativeOutputPath,
+    this.outputBytes,
     this.errorCode,
   });
 
@@ -20,6 +23,9 @@ class ProjectExportRecord {
   final ExportStatus status;
   final int revision;
   final DateTime createdAt;
+  final DateTime updatedAt;
+  final String settingsJson;
   final String? relativeOutputPath;
+  final int? outputBytes;
   final String? errorCode;
 }

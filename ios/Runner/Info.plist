@@ -8,6 +8,8 @@
 	<string>Import selected photos as frames in your stop-motion projects.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Record narration for your stop-motion projects.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save your exported stop-motion movies and GIFs to Photos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
