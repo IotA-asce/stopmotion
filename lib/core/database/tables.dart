@@ -67,7 +67,10 @@ class ExportRecords extends Table {
   TextColumn get status => text()();
   IntColumn get revision => integer()();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+  TextColumn get settingsJson => text().withDefault(const Constant('{}'))();
   TextColumn get relativeOutputPath => text().nullable()();
+  IntColumn get outputBytes => integer().nullable()();
   TextColumn get errorCode => text().nullable()();
 
   @override

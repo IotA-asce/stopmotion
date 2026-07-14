@@ -31,6 +31,11 @@
 | `audio_waveforms` | `^2.0.2` | simformsolutions | Native, cancellable waveform extraction with application-bounded sample caching | Context7 `/websites/pub_dev_audio_waveforms` documentation |
 | `just_audio` | `^0.10.6` | Ryan Heise | Local audio probing and per-clip playback adapter with position streams, trim sources, seek, and disposal | Context7 `/ryanheise/just_audio` documentation |
 | `audio_session` | `^0.2.4` | Ryan Heise | Explicit record/playback audio focus, interruption, and headphone-route handling | Context7 `/ryanheise/audio_session` documentation |
+| `archive` | `^4.0.7` | Dart community | Streaming ZIP creation and central-directory validation for image sequences and diagnostics | Package API and locked resolution; Context7 had no exact package record |
+| `ffmpeg_kit_flutter_new_min` | `^3.3.2` | antonkarpenko.com | Minimal LGPL FFmpeg/FFprobe adapter for platform H.264, AAC mixing, GIF, progress, cancellation, and independent validation | Context7 FFmpegKit API plus current package documentation; ADR 0003 |
+| `share_plus` | `^13.2.0` | flutter.dev community | Android/iOS system share sheet with explicit success, dismissal, and unavailable results | Context7 `/websites/pub_dev_packages_share_plus` documentation |
+| `gal` | `^2.3.2` | Midori Design Studio | User-initiated MP4/GIF save to the system media library with on-action permission handling | Context7 `/natsuk4ze/gal` documentation |
+| `open_file` | `^4.0.0` | Flutter community | Open completed local exports with a registered system application | Current package documentation and locked resolution |
 
 ## Development Packages
 

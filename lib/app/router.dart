@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 
 import '../core/widgets/app_error_view.dart';
 import '../core/widgets/app_scaffold.dart';
-import '../core/widgets/feature_boundary_page.dart';
 import '../features/audio/presentation/audio_page.dart';
 import '../features/capture/presentation/capture_page.dart';
 import '../features/editor/presentation/editor_page.dart';
+import '../features/export/presentation/export_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/preview/presentation/preview_page.dart';
 import '../features/projects/presentation/create_project_page.dart';
@@ -111,20 +111,11 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.projects}) {
               int.tryParse(state.uri.queryParameters['frame'] ?? '') ?? 0,
         ),
       ),
-      _workspaceRoute('export', 'Export', 7),
+      GoRoute(
+        path: '/project/:projectId/export',
+        builder: (BuildContext context, GoRouterState state) =>
+            ExportPage(projectId: state.pathParameters['projectId']!),
+      ),
     ],
-  );
-}
-
-GoRoute _workspaceRoute(String path, String title, int phase) {
-  return GoRoute(
-    path: '/project/:projectId/$path',
-    builder: (BuildContext context, GoRouterState state) {
-      return FeatureBoundaryPage(
-        title: title,
-        projectId: state.pathParameters['projectId'],
-        phase: phase,
-      );
-    },
   );
 }
