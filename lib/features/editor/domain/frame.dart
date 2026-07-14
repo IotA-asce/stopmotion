@@ -20,4 +20,24 @@ class ProjectFrame {
   final int sourceWidth;
   final int sourceHeight;
   final bool missing;
+
+  ProjectFrame copyWith({
+    String? id,
+    int? position,
+    int? holdFrames,
+    String? relativeSourcePath,
+    bool? missing,
+  }) {
+    return ProjectFrame(
+      id: id ?? this.id,
+      projectId: projectId,
+      relativeSourcePath: relativeSourcePath ?? this.relativeSourcePath,
+      position: position ?? this.position,
+      holdFrames: holdFrames ?? this.holdFrames,
+      createdAt: createdAt,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
+      missing: missing ?? this.missing,
+    );
+  }
 }

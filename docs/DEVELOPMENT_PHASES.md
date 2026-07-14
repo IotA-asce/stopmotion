@@ -108,23 +108,25 @@
 
 **Plan mapping:** Tasks 9-10
 
-- [ ] Implement immutable timeline snapshots and validated duration calculations.
-- [ ] Implement deterministic playhead-to-frame mapping and playback clock.
-- [ ] Implement reversible timeline commands and session undo/redo.
-- [ ] Implement frame insert, reorder, duplicate, delete, reverse, copy, paste, and hold duration.
-- [ ] Implement single, range, multi-select, and select-all behavior.
-- [ ] Implement project fps changes without data loss.
-- [ ] Implement adaptive portrait, landscape, and tablet editor layouts.
-- [ ] Implement preview canvas, transport, timecode, and loop controls.
-- [ ] Implement virtualized frame timeline, zoom, ruler, thumbnails, insertion marker, and visible playhead.
-- [ ] Implement keyboard and menu alternatives for drag-based commands.
-- [ ] Implement autosave status based on committed revisions.
-- [ ] Add timeline property tests, command tests, playback drift tests, widget tests, integration tests, and goldens.
+- [x] Implement immutable timeline snapshots and validated duration calculations.
+- [x] Implement deterministic playhead-to-frame mapping and playback clock.
+- [x] Implement reversible timeline commands and session undo/redo.
+- [x] Implement frame insert, reorder, duplicate, delete, reverse, copy, paste, and hold duration.
+- [x] Implement single, range, multi-select, and select-all behavior.
+- [x] Implement project fps changes without data loss.
+- [x] Implement adaptive portrait, landscape, and tablet editor layouts.
+- [x] Implement preview canvas, transport, timecode, and loop controls.
+- [x] Implement virtualized frame timeline, zoom, ruler, thumbnails, insertion marker, and visible playhead.
+- [x] Implement keyboard and menu alternatives for drag-based commands.
+- [x] Implement autosave status based on committed revisions.
+- [x] Add timeline property tests, command tests, playback drift tests, widget tests, integration tests, and goldens.
 
 **Phase gate:**
 
-- [ ] A 1,000-frame timeline remains responsive and within memory limits.
-- [ ] Every edit survives restart and every session command can be undone/redone correctly.
+- [x] A 1,000-frame timeline remains responsive and within memory limits.
+- [x] Every edit survives restart and every session command can be undone/redone correctly.
+
+**Phase 4 evidence:** Randomized timeline tests cover 1,000 frames, the virtualized editor widget renders only visible items, the monotonic clock stays within the 40 ms budget over two minutes, and transactional restart plus session undo/redo tests pass.
 
 ## Phase 5: Image Editing And Full-Screen Preview
 
