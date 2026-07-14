@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables.dart';
+import '../../../core/diagnostics/app_logger.dart';
 import '../../../core/filesystem/project_paths.dart';
 import '../../../core/media/export_engine.dart';
 import '../../../core/recovery/operation.dart';
@@ -47,6 +48,7 @@ class ExportRepository implements ExportGateway {
     required Map<ExportFormat, ExportEngine> engines,
     Uuid uuid = const Uuid(),
     DateTime Function()? now,
+    AppLogger? logger,
   }) : this._(
          database,
          paths,
@@ -58,6 +60,7 @@ class ExportRepository implements ExportGateway {
          engines,
          uuid,
          now ?? _utcNow,
+         logger,
        );
 
   ExportRepository._(
@@ -71,6 +74,7 @@ class ExportRepository implements ExportGateway {
     this._engines,
     this._uuid,
     this._now,
+    this._logger,
   );
 
   final AppDatabase _database;
@@ -83,6 +87,7 @@ class ExportRepository implements ExportGateway {
   final Map<ExportFormat, ExportEngine> _engines;
   final Uuid _uuid;
   final DateTime Function() _now;
+  final AppLogger? _logger;
 
   static DateTime _utcNow() => DateTime.now().toUtc();
 
@@ -162,6 +167,7 @@ class ExportRepository implements ExportGateway {
       temporaryPath: request.temporaryDirectory.path,
       finalPath: request.output.path,
     );
+    await _log('started', journalId, 'pending');
     await _database
         .into(_database.exportRecords)
         .insert(
@@ -202,6 +208,7 @@ class ExportRepository implements ExportGateway {
             );
       });
       await _journal.setState(journalId, OperationState.complete);
+      await _log('completed', journalId, 'complete');
       return result;
     } on ExportCancelled {
       await _updateRecord(request.id, ExportStatus.cancelled);
@@ -210,6 +217,7 @@ class ExportRepository implements ExportGateway {
         OperationState.failed,
         errorCode: 'cancelled',
       );
+      await _log('cancelled', journalId, 'cancelled');
       rethrow;
     } on Object catch (error) {
       await _updateRecord(
@@ -222,6 +230,7 @@ class ExportRepository implements ExportGateway {
         OperationState.failed,
         errorCode: error.runtimeType.toString(),
       );
+      await _log('failed', journalId, 'failed');
       rethrow;
     }
   }
@@ -272,6 +281,21 @@ class ExportRepository implements ExportGateway {
         errorCode: Value<String?>(errorCode),
       ),
     );
+  }
+
+  Future<void> _log(String action, String operationId, String status) async {
+    final AppLogger? logger = _logger;
+    if (logger == null) return;
+    try {
+      await logger.log(
+        category: 'export',
+        action: action,
+        operationId: operationId,
+        attributes: <String, Object?>{'status': status},
+      );
+    } on Object {
+      // Diagnostics must not affect an export's lifecycle.
+    }
   }
 
   ProjectExportRecord _mapRecord(ExportRecord row) => ProjectExportRecord(

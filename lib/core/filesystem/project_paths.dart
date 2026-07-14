@@ -19,9 +19,12 @@ class ProjectPaths {
   }
 
   File get databaseFile => File(p.join(root.path, 'stop_motion.sqlite'));
+  File get databaseBackupFile => File('${databaseFile.path}.backup');
   Directory get projectsRoot => Directory(p.join(root.path, 'projects'));
   Directory get operationRoot => Directory(p.join(root.path, 'operations'));
   Directory get exportsRoot => Directory(p.join(root.path, 'exports'));
+  Directory get diagnosticsDirectory =>
+      Directory(p.join(root.path, 'diagnostics'));
 
   Directory projectDirectory(String projectId) =>
       Directory(p.join(projectsRoot.path, projectId));

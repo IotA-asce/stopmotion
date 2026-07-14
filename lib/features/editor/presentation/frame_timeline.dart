@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../settings/presentation/settings_providers.dart';
 import '../domain/frame.dart';
 import '../domain/timeline.dart';
 import 'editor_controller.dart';
 
-class FrameTimeline extends StatefulWidget {
+class FrameTimeline extends ConsumerStatefulWidget {
   const FrameTimeline({
     required this.controller,
     required this.state,
@@ -20,10 +22,10 @@ class FrameTimeline extends StatefulWidget {
   final File Function(ProjectFrame frame) resolveFrame;
 
   @override
-  State<FrameTimeline> createState() => _FrameTimelineState();
+  ConsumerState<FrameTimeline> createState() => _FrameTimelineState();
 }
 
-class _FrameTimelineState extends State<FrameTimeline> {
+class _FrameTimelineState extends ConsumerState<FrameTimeline> {
   final ScrollController _scroll = ScrollController();
 
   @override
@@ -54,6 +56,9 @@ class _FrameTimelineState extends State<FrameTimeline> {
   @override
   Widget build(BuildContext context) {
     final TimelineSnapshot timeline = widget.state.timeline!;
+    final bool highContrast = ref
+        .watch(appSettingsProvider)
+        .highContrastTimeline;
     return Column(
       children: <Widget>[
         SizedBox(
@@ -112,6 +117,7 @@ class _FrameTimelineState extends State<FrameTimeline> {
                       onTap: () => widget.controller.select(frame.id),
                       onLongPress: () =>
                           widget.controller.select(frame.id, toggle: true),
+                      highContrast: highContrast,
                     );
                   },
                 ),
@@ -137,6 +143,7 @@ class _FrameTile extends StatelessWidget {
     required this.file,
     required this.onTap,
     required this.onLongPress,
+    required this.highContrast,
     super.key,
   });
 
@@ -148,6 +155,7 @@ class _FrameTile extends StatelessWidget {
   final File file;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  final bool highContrast;
 
   @override
   Widget build(BuildContext context) {
@@ -168,14 +176,22 @@ class _FrameTile extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: playhead
-                      ? colors.tertiary
+                      ? highContrast
+                            ? colors.error
+                            : colors.tertiary
                       : selected
-                      ? colors.primary
+                      ? highContrast
+                            ? colors.onSurface
+                            : colors.primary
                       : colors.outlineVariant,
                   width: playhead
-                      ? 3
+                      ? highContrast
+                            ? 4
+                            : 3
                       : selected
-                      ? 2
+                      ? highContrast
+                            ? 3
+                            : 2
                       : 1,
                 ),
                 borderRadius: BorderRadius.circular(4),

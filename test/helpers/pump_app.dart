@@ -9,6 +9,7 @@ Future<GoRouter> pumpStopMotionApp(
   WidgetTester tester, {
   String initialLocation = AppRoutes.projects,
   Size size = const Size(390, 844),
+  bool settle = true,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -18,6 +19,10 @@ Future<GoRouter> pumpStopMotionApp(
   final GoRouter router = createAppRouter(initialLocation: initialLocation);
   addTearDown(router.dispose);
   await tester.pumpWidget(ProviderScope(child: StopMotionApp(router: router)));
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
   return router;
 }

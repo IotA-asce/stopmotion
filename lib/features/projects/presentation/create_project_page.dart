@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../settings/presentation/settings_providers.dart';
 import '../domain/project.dart';
 import 'project_providers.dart';
 
@@ -32,6 +33,11 @@ class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
   @override
   void initState() {
     super.initState();
+    final defaults = ref.read(appSettingsProvider).captureDefaults;
+    _aspectRatio = defaults.aspectRatio;
+    _resolution = defaults.resolution;
+    _framesPerSecond = defaults.framesPerSecond;
+    _customFpsController.text = '${defaults.framesPerSecond}';
     _loadDefaultTitle();
   }
 

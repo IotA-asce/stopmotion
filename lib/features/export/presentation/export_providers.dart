@@ -8,6 +8,7 @@ import '../../../core/media/image_sequence_exporter.dart';
 import '../../audio/presentation/audio_providers.dart';
 import '../../editor/presentation/editor_providers.dart';
 import '../../projects/presentation/project_providers.dart';
+import '../../settings/presentation/settings_providers.dart';
 import '../data/export_handoff.dart';
 import '../data/export_repository.dart';
 import '../domain/export_record.dart';
@@ -38,6 +39,7 @@ final exportRepositoryProvider = Provider<ExportRepository>((Ref ref) {
     journal: ref.watch(operationJournalProvider),
     preflight: ref.watch(exportPreflightProvider),
     engines: ref.watch(exportEnginesProvider),
+    logger: ref.watch(appLoggerProvider),
   );
 });
 
@@ -51,6 +53,7 @@ final exportControllerProvider = Provider.autoDispose
         projectId: projectId,
         repository: ref.watch(exportRepositoryProvider),
         handoff: ref.watch(exportHandoffProvider),
+        defaults: ref.watch(appSettingsProvider).exportDefaults,
       );
       ref.onDispose(controller.dispose);
       unawaited(controller.initialize());
