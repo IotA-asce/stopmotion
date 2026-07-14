@@ -166,6 +166,9 @@ class _FrameTile extends StatelessWidget {
         button: true,
         selected: selected,
         label: 'Frame ${index + 1}, hold ${frame.holdFrames}',
+        value: playhead ? 'Playhead' : null,
+        hint:
+            'Double tap to select. Long press to add or remove from selection.',
         child: SizedBox(
           width: width,
           child: InkWell(

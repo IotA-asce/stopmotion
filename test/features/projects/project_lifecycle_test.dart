@@ -29,6 +29,9 @@ void main() {
   testWidgets('creates a project and opens its capture route', (
     WidgetTester tester,
   ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
     final Directory root = Directory.systemTemp.createTempSync(
       'project_widget_',
     );
@@ -72,5 +75,8 @@ void main() {
     router.dispose();
     await tester.runAsync(database.close);
     root.deleteSync(recursive: true);
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+    tester.platformDispatcher.clearTextScaleFactorTestValue();
   });
 }

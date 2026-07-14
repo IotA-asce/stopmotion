@@ -29,6 +29,17 @@ void main() {
     expect(find.byTooltip('Frame actions'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Frame 1, hold 1')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Frame 1000, hold 1')), findsNothing);
+    final Semantics frameSemantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is Semantics && widget.properties.label == 'Frame 1, hold 1',
+      ),
+    );
+    expect(frameSemantics.properties.value, 'Playhead');
+    expect(
+      frameSemantics.properties.hint,
+      'Double tap to select. Long press to add or remove from selection.',
+    );
     expect(tester.takeException(), isNull);
 
     semantics.dispose();

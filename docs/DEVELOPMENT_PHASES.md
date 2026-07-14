@@ -225,24 +225,28 @@
 
 **Plan mapping:** Tasks 20-22
 
-- [ ] Audit semantics, labels, values, hints, focus order, selected states, and announcements.
-- [ ] Verify minimum touch targets and WCAG 2.2 AA contrast where applicable.
-- [ ] Verify all workflows at 200% text scale without clipping or hidden commands.
+- [x] Audit semantics, labels, values, hints, focus order, selected states, and announcements.
+- [x] Verify minimum touch targets and WCAG 2.2 AA contrast where applicable.
+- [x] Verify all workflows at 200% text scale without clipping or hidden commands.
 - [ ] Verify screen-reader completion with TalkBack and VoiceOver.
 - [ ] Verify reduced motion, high-contrast timeline, hardware keyboard, phone, tablet, portrait, and landscape behavior.
-- [ ] Establish and document the lower-memory/current Android and oldest/current iPhone device matrix.
+- [x] Establish and document the lower-memory/current Android and oldest/current iPhone device matrix.
 - [ ] Measure and meet launch, project-open, capture, timeline, autosave, playback, export, and memory budgets.
 - [ ] Run long-capture, lifecycle, process-death, low-storage, and repeated export/cancel soak tests.
-- [ ] Remove unused permissions and review every runtime request.
+- [x] Remove unused permissions and review every runtime request.
 - [ ] Review dependencies, licenses, transitive native binaries, privacy behavior, and store-policy compatibility.
 - [ ] Scan tracked files and release artifacts for secrets, signing material, debug endpoints, and private paths.
 - [ ] Verify all primary journeys offline.
-- [ ] Complete privacy policy and store data-safety documentation from observed behavior.
+- [x] Complete privacy policy and store data-safety documentation from observed behavior.
 
 **Phase gate:**
 
 - [ ] All accessibility journeys and performance budgets pass on the recorded physical-device matrix.
 - [ ] Privacy, security, dependency, license, and platform-policy reviews have no unresolved release blockers.
+
+**Phase 9 automated evidence:** Flutter accessibility guidelines now cover Android/iOS tap targets, labels, and text contrast for the top-level shell; onboarding, project creation, the primary shell, Settings, Capture, Editor, Audio, Preview, Export, and Recovery workflows run at 200% text scale. Timeline frame semantics now expose playhead state and a multi-select hint. Deterministic 50-project/500-frame/1,000-frame fixture tooling and a CI-stable timeline guard are in place. The release inventory records the Android/iOS matrix, release-only permission set, local-only data flow, diagnostic redaction, dependency/license review, and a tracked-source safety scan.
+
+**Remaining Phase 9 blockers:** Run the documented TalkBack/VoiceOver, high-contrast/reduced-motion, keyboard, orientation, offline, performance, long-capture, lifecycle, process-death, low-storage, export-cancel, signed-artifact, and FFmpeg distribution/license reviews on the device matrix. These gates cannot be substituted by widget tests or source inspection.
 
 ## Phase 10: Release Candidate And Public Release
 

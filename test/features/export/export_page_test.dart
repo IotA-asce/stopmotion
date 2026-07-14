@@ -74,6 +74,7 @@ void main() {
   ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
     late Directory root;
     late ExportRequest request;
     await tester.runAsync(() async {
@@ -90,6 +91,7 @@ void main() {
       if (root.existsSync()) root.deleteSync(recursive: true);
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
     });
     await controller.initialize();
 

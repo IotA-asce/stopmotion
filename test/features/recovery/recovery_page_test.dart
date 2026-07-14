@@ -7,6 +7,8 @@ void main() {
   testWidgets('recovery screen presents a safe continue action when clean', (
     WidgetTester tester,
   ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     await pumpStopMotionApp(
       tester,
       initialLocation: '/recovery',
