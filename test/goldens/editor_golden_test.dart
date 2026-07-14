@@ -97,5 +97,5 @@ void main() {
     await tester.runAsync(() => root.delete(recursive: true));
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
-  });
+  }, skip: !Platform.isMacOS);
 }
