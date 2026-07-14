@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/filesystem/project_paths.dart';
+import '../../../core/media/audio_mixer.dart';
 import '../../../core/media/audio_service.dart';
 import '../data/audio_picker.dart';
 import '../data/audio_probe.dart';
@@ -24,6 +25,8 @@ class AudioViewState {
     this.level = 0,
     this.elapsed = Duration.zero,
     this.playheadMilliseconds = 0,
+    this.playing = false,
+    this.loop = false,
     this.waveforms = const <String, List<double>>{},
     this.busy = false,
     this.errorMessage,
@@ -36,6 +39,8 @@ class AudioViewState {
   final double level;
   final Duration elapsed;
   final int playheadMilliseconds;
+  final bool playing;
+  final bool loop;
   final Map<String, List<double>> waveforms;
   final bool busy;
   final String? errorMessage;
@@ -48,6 +53,8 @@ class AudioViewState {
     double? level,
     Duration? elapsed,
     int? playheadMilliseconds,
+    bool? playing,
+    bool? loop,
     Map<String, List<double>>? waveforms,
     bool? busy,
     String? errorMessage,
@@ -60,6 +67,8 @@ class AudioViewState {
     level: level ?? this.level,
     elapsed: elapsed ?? this.elapsed,
     playheadMilliseconds: playheadMilliseconds ?? this.playheadMilliseconds,
+    playing: playing ?? this.playing,
+    loop: loop ?? this.loop,
     waveforms: waveforms ?? this.waveforms,
     busy: busy ?? this.busy,
     errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
@@ -77,6 +86,7 @@ class AudioController extends ChangeNotifier {
     required ProjectPaths paths,
     Uuid uuid = const Uuid(),
     Duration countInStep = const Duration(seconds: 1),
+    AudioMixer? mixer,
   }) : this._(
          projectId,
          repository,
@@ -87,6 +97,7 @@ class AudioController extends ChangeNotifier {
          paths,
          uuid,
          countInStep,
+         mixer,
        );
 
   AudioController._(
@@ -99,6 +110,7 @@ class AudioController extends ChangeNotifier {
     this._paths,
     this._uuid,
     this._countInStep,
+    this._mixer,
   );
 
   final String projectId;
@@ -110,8 +122,10 @@ class AudioController extends ChangeNotifier {
   final ProjectPaths _paths;
   final Uuid _uuid;
   final Duration _countInStep;
+  final AudioMixer? _mixer;
   AudioViewState _state = const AudioViewState();
   StreamSubscription<double>? _levelSubscription;
+  StreamSubscription<AudioMixerSnapshot>? _mixerSubscription;
   Timer? _elapsedTimer;
   File? _recordingFile;
   DateTime? _recordingStarted;
@@ -134,6 +148,7 @@ class AudioController extends ChangeNotifier {
           busy: false,
         ),
       );
+      await _loadMixer(timeline);
       unawaited(_loadWaveforms(timeline));
     });
   }
@@ -174,6 +189,7 @@ class AudioController extends ChangeNotifier {
       _error('Microphone access is denied. Import audio remains available.');
       return;
     }
+    await _mixer?.pause();
     _cancelCountIn = false;
     for (var value = 3; value > 0; value--) {
       _update(
@@ -320,6 +336,30 @@ class AudioController extends ChangeNotifier {
     _update(
       _state.copyWith(playheadMilliseconds: milliseconds.clamp(0, maximum)),
     );
+    unawaited(_mixer?.seek(Duration(milliseconds: milliseconds)));
+  }
+
+  Future<void> togglePlayback() async {
+    final AudioMixer? mixer = _mixer;
+    if (mixer == null) {
+      return;
+    }
+    if (_state.playing) {
+      await mixer.pause();
+    } else {
+      await mixer.play();
+    }
+  }
+
+  Future<void> toggleLoop() async {
+    await _mixer?.setLoop(!_state.loop);
+  }
+
+  Future<void> handleLifecycle({required bool active}) async {
+    await _mixer?.handleLifecycle(active: active);
+    if (!active && _state.recording == NarrationState.recording) {
+      await pauseRecording();
+    }
   }
 
   void clearError() => _update(_state.copyWith(clearError: true));
@@ -327,13 +367,16 @@ class AudioController extends ChangeNotifier {
   Future<void> _persist(AudioTimeline timeline) async {
     await _guard(() async {
       await _repository.save(timeline);
-      _update(_state.copyWith(timeline: await _repository.load(projectId)));
+      final AudioTimeline restored = await _repository.load(projectId);
+      _update(_state.copyWith(timeline: restored));
+      await _loadMixer(restored);
     });
   }
 
   Future<void> _reload() async {
     final AudioTimeline timeline = await _repository.load(projectId);
     _update(_state.copyWith(timeline: timeline));
+    await _loadMixer(timeline);
     unawaited(_loadWaveforms(timeline));
   }
 
@@ -354,6 +397,30 @@ class AudioController extends ChangeNotifier {
         // The missing/unreadable state is handled by repository reload.
       }
     }
+  }
+
+  Future<void> _loadMixer(AudioTimeline timeline) async {
+    final AudioMixer? mixer = _mixer;
+    if (mixer == null) {
+      return;
+    }
+    final Duration position = Duration(
+      milliseconds: _state.playheadMilliseconds,
+    );
+    await mixer.load(
+      timeline,
+      (AudioClip clip) => _paths.resolveRelativeFile(clip.relativeSourcePath),
+    );
+    await mixer.seek(position);
+    _mixerSubscription ??= mixer.snapshots.listen(
+      (AudioMixerSnapshot snapshot) => _update(
+        _state.copyWith(
+          playheadMilliseconds: snapshot.position.inMilliseconds,
+          playing: snapshot.playing,
+          loop: snapshot.loop,
+        ),
+      ),
+    );
   }
 
   Duration get _currentElapsed =>
@@ -390,7 +457,9 @@ class AudioController extends ChangeNotifier {
     _cancelCountIn = true;
     _elapsedTimer?.cancel();
     unawaited(_levelSubscription?.cancel());
+    unawaited(_mixerSubscription?.cancel());
     unawaited(_recorder.dispose());
+    unawaited(_mixer?.dispose());
     unawaited(_waveformService.cancel());
     super.dispose();
   }

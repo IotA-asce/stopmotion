@@ -156,7 +156,7 @@
 
 **Plan mapping:** Tasks 13-14
 
-- [ ] Define audio service, audio timeline, clip, track-limit, and mixer contracts.
+- [x] Define audio service, audio timeline, clip, track-limit, and mixer contracts.
 - [x] Implement microphone permission and denied states without blocking imported audio.
 - [x] Implement narration count-in, level meter, record, pause, resume, and stop.
 - [x] Implement project-owned audio import and unreadable-file recovery.
@@ -164,14 +164,16 @@
 - [x] Implement clip position, trim, split, duplicate, delete, rename, mute, and volume.
 - [x] Implement fade-in, fade-out, project master volume, and track limits.
 - [x] Implement accessible numeric alternatives to timeline trim and positioning gestures.
-- [ ] Implement mixed preview playback with audio as authoritative clock.
-- [ ] Handle seek, pause, loop, app lifecycle, audio focus, headphones, and route changes.
-- [ ] Add audio domain, permission, recovery, mixing, lifecycle, and synchronization tests.
+- [x] Implement mixed preview playback with audio as authoritative clock.
+- [x] Handle seek, pause, loop, app lifecycle, audio focus, headphones, and route changes.
+- [x] Add audio domain, permission, recovery, mixing, lifecycle, and synchronization tests.
 
 **Phase gate:**
 
-- [ ] Mixed audio remains within 40 milliseconds of timeline timing over two minutes.
-- [ ] Audio edits and media survive restart and release resources when the workspace closes.
+- [x] Mixed audio remains within 40 milliseconds of timeline timing over two minutes.
+- [x] Audio edits and media survive restart and release resources when the workspace closes.
+
+**Phase 6 evidence:** File-backed restart tests preserve project-owned audio and edit metadata; mixer fixtures cover overlap, trims, fades, volume, mute, seek, loop, focus, headphones, lifecycle, and disposal. The active native player is the authoritative preview clock, and the two-minute synchronization fixture remains below the 40 ms budget.
 
 ## Phase 7: Export, Save, And Share
 

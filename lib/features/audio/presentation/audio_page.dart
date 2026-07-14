@@ -34,9 +34,7 @@ class _AudioPageState extends ConsumerState<AudioPage>
       final AudioController controller = ref.read(
         audioControllerProvider(widget.projectId),
       );
-      if (controller.state.recording == NarrationState.recording) {
-        controller.pauseRecording();
-      }
+      controller.handleLifecycle(active: false);
     }
   }
 
@@ -151,6 +149,17 @@ class _AudioPageState extends ConsumerState<AudioPage>
             tooltip: 'Jump to start',
             onPressed: () => controller.seek(0),
             icon: const Icon(Icons.first_page),
+          ),
+          IconButton(
+            tooltip: state.playing ? 'Pause' : 'Play',
+            onPressed: controller.togglePlayback,
+            icon: Icon(state.playing ? Icons.pause : Icons.play_arrow),
+          ),
+          IconButton(
+            tooltip: state.loop ? 'Disable loop' : 'Enable loop',
+            onPressed: controller.toggleLoop,
+            isSelected: state.loop,
+            icon: const Icon(Icons.repeat),
           ),
           Expanded(
             child: Slider(

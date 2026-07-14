@@ -83,6 +83,8 @@ void main() {
     expect(find.text('Import audio'), findsOneWidget);
     expect(find.text('Mute project audio'), findsOneWidget);
     expect(find.text('Select an audio clip'), findsOneWidget);
+    expect(find.byTooltip('Play'), findsOneWidget);
+    expect(find.byTooltip('Enable loop'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox.shrink());
