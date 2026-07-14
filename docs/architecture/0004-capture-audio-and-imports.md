@@ -12,7 +12,7 @@ Use `image` to decode, validate, bake EXIF orientation, and preserve source pixe
 
 The camera adapter exposes zoom/exposure bounds and hides controls that the capability model marks unsupported. White-balance lock is hidden because the selected package does not expose a portable control. Runtime hardware-control failures become actionable UI errors rather than silent failures.
 
-Use `record` behind `AudioRecordingService` for mono AAC/M4A narration with permission-on-action, amplitude metering, pause/resume, and explicit disposal. Use `file_picker` for native audio selection and immediately copy accepted media into project storage. Use `audio_waveforms` behind a cancellable, sample-bounded cache. Use `just_audio` for duration probing and per-clip local playback, coordinated by a package-independent mixer contract. Use `audio_session` for play/record focus, interruptions, and noisy-route events.
+Use `record` behind `AudioRecordingService` for mono AAC/M4A narration with permission-on-action, amplitude metering, pause/resume, and explicit disposal. Use Flutter's first-party `file_selector` for native audio selection and immediately copy accepted media into project storage. Use `audio_waveforms` behind a cancellable, sample-bounded cache. Use `just_audio` for duration probing and per-clip local playback, coordinated by a package-independent mixer contract. Use `audio_session` for play/record focus, interruptions, and noisy-route events.
 
 The database stores non-destructive clip position, trim, volume, fades, mute, missing-media state, and project master volume. A missing source never blocks project opening: it is marked, muted, and retained for recovery.
 
@@ -30,4 +30,4 @@ The database stores non-destructive clip position, trim, volume, fades, mute, mi
 - Context7 `/websites/pub_dev_packages_camera`, queried 2026-07-14.
 - Context7 `/flutter/packages` image_picker documentation, queried 2026-07-14.
 - Context7 `/brendan-duncan/image`, `/fluttercommunity/wakelock_plus`, and `/baseflow/flutter-permission-handler`, queried 2026-07-14.
-- Context7 `/llfbandit/record`, `/miguelpruivo/flutter_file_picker`, `/websites/pub_dev_audio_waveforms`, `/ryanheise/just_audio`, and `/ryanheise/audio_session`, queried 2026-07-15.
+- Context7 `/llfbandit/record`, `/flutter/packages` file_selector, `/websites/pub_dev_audio_waveforms`, `/ryanheise/just_audio`, and `/ryanheise/audio_session`, queried 2026-07-15.
