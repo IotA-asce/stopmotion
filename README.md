@@ -25,3 +25,7 @@ Android uses application ID `com.iotaasce.stopmotion` with Android 10 as the min
 ## Status
 
 Phases 1-8 are implemented in software: the Flutter foundation, durable project library, camera workspace, transactional editor, non-destructive image adjustments, synchronized preview, audio workspace, journaled MP4/GIF/image-sequence export, recovery, settings, storage, and diagnostics are available. Phase 9 adds automated accessibility, adaptation, performance, privacy, and release-safety evidence. The app is not yet a public release: physical camera, codec, accessibility, interruption, performance, memory, signed-artifact, and FFmpeg license/distribution gates remain open in `docs/DEVELOPMENT_PHASES.md`.
+
+## Test APKs
+
+Pushing a tag matching `V*` builds an Android debug APK and attaches it to a GitHub prerelease. These APKs are for tester installation only and are not production-signed releases.
