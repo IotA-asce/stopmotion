@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/rendered_frame_image.dart';
+import '../../audio/presentation/audio_providers.dart';
 import '../../editor/domain/frame.dart';
 import '../../editor/domain/timeline.dart';
 import '../../editor/presentation/editor_providers.dart';
@@ -47,6 +48,9 @@ class _PreviewPageState extends ConsumerState<PreviewPage>
           initialFrame: widget.initialFrame,
           editor: ref.read(editorRepositoryProvider),
           projects: ref.read(projectRepositoryProvider),
+          audio: ref.read(audioRepositoryProvider),
+          mixer: ref.read(audioMixerProvider('preview:${widget.projectId}')),
+          paths: ref.read(projectPathsProvider),
         );
     if (_ownsController) {
       unawaited(_controller.initialize());

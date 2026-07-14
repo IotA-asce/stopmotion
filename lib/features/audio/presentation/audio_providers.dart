@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/media/audio_mixer.dart';
 import '../../../core/media/audio_service.dart';
 import '../../projects/presentation/project_providers.dart';
 import '../data/audio_picker.dart';
@@ -34,6 +35,15 @@ final audioRepositoryProvider = Provider<AudioRepository>((Ref ref) {
   );
 });
 
+final audioMixerProvider = Provider.autoDispose.family<AudioMixer, String>((
+  Ref ref,
+  String workspaceKey,
+) {
+  final AudioMixer mixer = createPackageAudioMixer();
+  ref.onDispose(() => unawaited(mixer.dispose()));
+  return mixer;
+});
+
 final audioControllerProvider = Provider.autoDispose
     .family<AudioController, String>((Ref ref, String projectId) {
       final AudioController controller = AudioController(
@@ -44,6 +54,7 @@ final audioControllerProvider = Provider.autoDispose
         probe: ref.watch(audioProbeProvider),
         waveforms: ref.watch(waveformServiceProvider),
         paths: ref.watch(projectPathsProvider),
+        mixer: ref.watch(audioMixerProvider('audio:$projectId')),
       );
       ref.onDispose(controller.dispose);
       unawaited(controller.initialize());

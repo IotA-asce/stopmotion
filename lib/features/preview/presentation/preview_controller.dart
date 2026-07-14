@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../core/filesystem/project_paths.dart';
+import '../../../core/media/audio_mixer.dart';
+import '../../audio/data/audio_repository.dart';
+import '../../audio/domain/audio_clip.dart';
 import '../../editor/data/editor_repository.dart';
 import '../../editor/domain/timeline.dart';
 import '../../projects/data/project_repository.dart';
@@ -58,12 +62,18 @@ class PreviewController extends ChangeNotifier {
     required EditorRepository editor,
     required ProjectRepository projects,
     PlaybackClock? clock,
+    AudioRepository? audio,
+    AudioMixer? mixer,
+    ProjectPaths? paths,
   }) : this._(
          projectId,
          initialFrame,
          editor,
          projects,
          clock ?? PlaybackClock(),
+         audio,
+         mixer,
+         paths,
        );
 
   PreviewController._(
@@ -72,6 +82,9 @@ class PreviewController extends ChangeNotifier {
     this._editor,
     this._projects,
     this._clock,
+    this._audio,
+    this._mixer,
+    this._paths,
   );
 
   final String projectId;
@@ -79,6 +92,9 @@ class PreviewController extends ChangeNotifier {
   final EditorRepository _editor;
   final ProjectRepository _projects;
   final PlaybackClock _clock;
+  final AudioRepository? _audio;
+  final AudioMixer? _mixer;
+  final ProjectPaths? _paths;
   Timer? _ticker;
   Timer? _hideTimer;
   bool _disposed = false;
@@ -94,7 +110,20 @@ class PreviewController extends ChangeNotifier {
         throw StateError('Preview requires a project with frames.');
       }
       final int frame = initialFrame.clamp(0, timeline.frames.length - 1);
-      _clock.seek(timeline.elapsedAtFrame(frame));
+      final Duration initialPosition = timeline.elapsedAtFrame(frame);
+      _clock.seek(initialPosition);
+      if (_audio != null && _mixer != null && _paths != null) {
+        final audioTimeline = await _audio.load(projectId);
+        await _mixer.load(
+          audioTimeline,
+          (AudioClip clip) =>
+              _paths.resolveRelativeFile(clip.relativeSourcePath),
+        );
+        if (audioTimeline.hasAudibleAudio) {
+          await _mixer.seek(initialPosition);
+          _clock.audioPosition = () => _mixer.snapshot.position;
+        }
+      }
       _update(
         _state.copyWith(
           project: project,
@@ -120,6 +149,7 @@ class PreviewController extends ChangeNotifier {
       _clock.seek(Duration.zero);
     }
     _clock.play();
+    unawaited(_mixer?.play());
     _ticker = Timer.periodic(const Duration(milliseconds: 16), (_) => _tick());
     _update(_state.copyWith(playing: true));
     showControls(autoHide: true);
@@ -130,6 +160,7 @@ class PreviewController extends ChangeNotifier {
     if (timeline != null) {
       _clock.pause(timeline.duration);
     }
+    unawaited(_mixer?.pause());
     _ticker?.cancel();
     _update(_state.copyWith(playing: false, controlsVisible: true));
   }
@@ -145,11 +176,13 @@ class PreviewController extends ChangeNotifier {
             .round(),
       ),
     );
+    unawaited(_mixer?.seek(_clock.position(timeline.duration)));
     _tick();
   }
 
   void toggleLoop() {
     _clock.loop = !_state.loop;
+    unawaited(_mixer?.setLoop(_clock.loop));
     _update(_state.copyWith(loop: _clock.loop));
   }
 
@@ -208,6 +241,7 @@ class PreviewController extends ChangeNotifier {
     _disposed = true;
     _ticker?.cancel();
     _hideTimer?.cancel();
+    unawaited(_mixer?.dispose());
     super.dispose();
   }
 }
