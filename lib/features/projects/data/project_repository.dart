@@ -216,6 +216,8 @@ class ProjectRepository {
                 updatedAt: now,
                 status: ProjectStatus.draft.name,
                 currentRevision: Value<int>(source.currentRevision),
+                masterVolume: Value<double>(source.masterVolume),
+                audioMuted: Value<bool>(source.audioMuted),
               ),
             );
 
@@ -273,6 +275,7 @@ class ProjectRepository {
                   fadeInMilliseconds: Value<int>(clip.fadeInMilliseconds),
                   fadeOutMilliseconds: Value<int>(clip.fadeOutMilliseconds),
                   muted: Value<bool>(clip.muted),
+                  missing: Value<bool>(clip.missing),
                 ),
               );
         }
@@ -370,6 +373,8 @@ class ProjectRepository {
       frameCount: summary.read(count) ?? 0,
       durationFrames: summary.read(duration) ?? 0,
       currentRevision: row.currentRevision,
+      masterVolume: row.masterVolume,
+      audioMuted: row.audioMuted,
       lastExportedRevision: row.lastExportedRevision,
       deletedAt: row.deletedAt,
     );

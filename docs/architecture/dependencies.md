@@ -26,6 +26,11 @@
 | `image_picker` | `^1.2.3` | flutter.dev | Single/batch system image selection and Android lost-data recovery | Context7 `/flutter/packages` documentation |
 | `permission_handler` | `^12.0.3` | Baseflow | Opens system app settings after camera denial; does not request permissions during onboarding | Context7 `/baseflow/flutter-permission-handler` documentation |
 | `wakelock_plus` | `^1.6.1` | Flutter Community | Capture-workspace wake lock with explicit interval start/stop ownership | Context7 `/fluttercommunity/wakelock_plus` documentation |
+| `record` | `^7.1.1` | llfbandit | AAC/M4A narration recording, permission request, pause/resume, and amplitude metering behind `AudioRecordingService` | Context7 `/llfbandit/record` documentation |
+| `file_picker` | `^3.0.4` | miguelpruivo | Native audio-file picker; the newest version resolvable with the pinned Flutter SDK | Context7 `/miguelpruivo/flutter_file_picker` documentation |
+| `audio_waveforms` | `^2.0.2` | simformsolutions | Native, cancellable waveform extraction with application-bounded sample caching | Context7 `/websites/pub_dev_audio_waveforms` documentation |
+| `just_audio` | `^0.10.6` | Ryan Heise | Local audio probing and per-clip playback adapter with position streams, trim sources, seek, and disposal | Context7 `/ryanheise/just_audio` documentation |
+| `audio_session` | `^0.2.4` | Ryan Heise | Explicit record/playback audio focus, interruption, and headphone-route handling | Context7 `/ryanheise/audio_session` documentation |
 
 ## Development Packages
 

@@ -1,4 +1,12 @@
-enum OperationType { capture, import, duplicateProject, deleteProject, export }
+enum OperationType {
+  capture,
+  import,
+  importAudio,
+  recordAudio,
+  duplicateProject,
+  deleteProject,
+  export,
+}
 
 enum OperationState { pending, mediaReady, databaseCommitted, complete, failed }
 

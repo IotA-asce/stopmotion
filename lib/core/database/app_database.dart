@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -50,6 +50,11 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 2) {
           await migrator.addColumn(frameRecords, frameRecords.adjustmentsJson);
+        }
+        if (from < 3) {
+          await migrator.addColumn(projectRecords, projectRecords.masterVolume);
+          await migrator.addColumn(projectRecords, projectRecords.audioMuted);
+          await migrator.addColumn(audioClipRecords, audioClipRecords.missing);
         }
       });
     },

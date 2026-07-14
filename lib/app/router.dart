@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../core/widgets/app_error_view.dart';
 import '../core/widgets/app_scaffold.dart';
 import '../core/widgets/feature_boundary_page.dart';
+import '../features/audio/presentation/audio_page.dart';
 import '../features/capture/presentation/capture_page.dart';
 import '../features/editor/presentation/editor_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
@@ -97,7 +98,11 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.projects}) {
         builder: (BuildContext context, GoRouterState state) =>
             EditorPage(projectId: state.pathParameters['projectId']!),
       ),
-      _workspaceRoute('audio', 'Audio', 6),
+      GoRoute(
+        path: '/project/:projectId/audio',
+        builder: (BuildContext context, GoRouterState state) =>
+            AudioPage(projectId: state.pathParameters['projectId']!),
+      ),
       GoRoute(
         path: '/project/:projectId/preview',
         builder: (BuildContext context, GoRouterState state) => PreviewPage(
