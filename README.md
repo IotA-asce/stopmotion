@@ -8,6 +8,20 @@ The repository is being rebuilt from a release specification before implementati
 - `docs/DEVELOPMENT_PHASES.md`
 - `docs/plans/2026-07-14-first-public-release.md`
 
+## Development
+
+The repository pins Flutter 3.44.6 and Dart 3.12.2. Install that Flutter version, then run:
+
+```bash
+flutter pub get
+dart format --output=none --set-exit-if-changed .
+flutter analyze
+flutter test
+flutter run
+```
+
+Android uses application ID `com.iotaasce.stopmotion` with Android 10 as the minimum. iOS uses bundle ID `com.iotaasce.stopmotion` with iOS 15 as the minimum.
+
 ## Status
 
-Repository initialized. The first-public-release product contract and implementation plan are ready; application implementation has not started.
+Phase 1 application foundation is implemented. Hosted Android and iOS build validation remains open in `docs/DEVELOPMENT_PHASES.md` until CI passes.

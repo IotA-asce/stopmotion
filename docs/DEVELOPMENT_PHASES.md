@@ -33,24 +33,24 @@
 
 **Plan mapping:** Tasks 1-2
 
-- [ ] Select and pin the current stable Flutter and Dart versions.
-- [ ] Create Android and iOS Flutter platform projects.
-- [ ] Confirm application IDs, minimum OS versions, supported orientations, and release flavors.
-- [ ] Enable strict analyzer and formatter rules.
-- [ ] Select maintained dependencies using current documentation and record decisions.
-- [ ] Add architecture decision records for state, navigation, storage, database, camera, audio, and export.
-- [ ] Configure GitHub Actions for format, analysis, tests, Android build, and iOS no-codesign build.
-- [ ] Implement application bootstrap and dependency injection.
-- [ ] Implement the route contract and route restoration.
-- [ ] Implement phone bottom navigation and tablet navigation rail.
-- [ ] Implement light/dark semantic themes from the final-state design tokens.
-- [ ] Add reusable app scaffolds, loading states, error states, dialogs, sheets, and accessibility helpers.
-- [ ] Add app-shell widget, route, theme, semantics, and golden tests.
+- [x] Select and pin the current stable Flutter and Dart versions.
+- [x] Create Android and iOS Flutter platform projects.
+- [x] Confirm application IDs, minimum OS versions, supported orientations, and release flavors.
+- [x] Enable strict analyzer and formatter rules.
+- [x] Select maintained dependencies using current documentation and record decisions.
+- [x] Add architecture decision records for state, navigation, storage, database, camera, audio, and export.
+- [x] Configure GitHub Actions for format, analysis, tests, Android build, and iOS no-codesign build.
+- [x] Implement application bootstrap and dependency injection.
+- [x] Implement the route contract and route restoration.
+- [x] Implement phone bottom navigation and tablet navigation rail.
+- [x] Implement light/dark semantic themes from the final-state design tokens.
+- [x] Add reusable app scaffolds, loading states, error states, dialogs, sheets, and accessibility helpers.
+- [x] Add app-shell widget, route, theme, semantics, and golden tests.
 
 **Phase gate:**
 
 - [ ] A clean checkout formats, analyzes, tests, and builds Android/iOS debug artifacts in CI.
-- [ ] Every declared route renders a stable screen or explicit error state.
+- [x] Every declared route renders a stable screen or explicit error state.
 
 ## Phase 2: Project Domain, Storage, And Library
 
