@@ -2,7 +2,7 @@
 
 Stop Motion is a mobile-first Flutter application for capturing, editing, previewing, exporting, and sharing stop-motion films.
 
-The repository is being rebuilt from a release specification before implementation begins. Product scope and implementation sequencing will live in:
+The release contract, progress tracker, and implementation sequencing live in:
 
 - `docs/FINAL_STATE.md`
 - `docs/DEVELOPMENT_PHASES.md`
@@ -24,4 +24,4 @@ Android uses application ID `com.iotaasce.stopmotion` with Android 10 as the min
 
 ## Status
 
-Phases 1-7 are implemented in software: the Flutter foundation, durable project library, camera workspace, transactional editor, non-destructive image adjustments, synchronized preview, audio workspace, and journaled MP4/GIF/image-sequence export with system handoff are available. Physical camera, export-codec, interruption, and baseline-device memory evidence remain open in `docs/DEVELOPMENT_PHASES.md` until the device gates run.
+Phases 1-8 are implemented in software: the Flutter foundation, durable project library, camera workspace, transactional editor, non-destructive image adjustments, synchronized preview, audio workspace, journaled MP4/GIF/image-sequence export, recovery, settings, storage, and diagnostics are available. Phase 9 adds automated accessibility, adaptation, performance, privacy, and release-safety evidence. The app is not yet a public release: physical camera, codec, accessibility, interruption, performance, memory, signed-artifact, and FFmpeg license/distribution gates remain open in `docs/DEVELOPMENT_PHASES.md`.
