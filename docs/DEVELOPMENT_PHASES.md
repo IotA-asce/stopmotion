@@ -78,25 +78,29 @@
 
 **Plan mapping:** Tasks 6-8
 
-- [ ] Define a package-independent camera service and capability model.
+- [x] Define a package-independent camera service and capability model.
 - [ ] Validate camera orientation and lifecycle behavior on Android and iOS physical devices.
-- [ ] Implement camera permission, denied, restricted, unavailable, and retry states.
-- [ ] Implement the nine-step durable frame capture transaction.
-- [ ] Suppress duplicate shutter taps while capture is active.
-- [ ] Show frame success only after file and database verification.
-- [ ] Implement camera switching, flash, zoom, focus/exposure, and capability fallbacks.
-- [ ] Implement grid, onion skin, onion opacity, and difference overlays.
-- [ ] Implement self-timer and cancelable countdown.
-- [ ] Implement interval capture, wake-lock handling, low-storage stop, and explicit start/stop.
-- [ ] Implement supported volume-button shutter behavior.
-- [ ] Implement single and batch image imports using project-owned copies.
-- [ ] Implement frame review, retake, duplicate, delete, and undo.
-- [ ] Add capture persistence, interruption, import, interval, permission, lifecycle, semantics, and golden tests.
+- [x] Implement camera permission, denied, restricted, unavailable, and retry states.
+- [x] Implement the nine-step durable frame capture transaction.
+- [x] Suppress duplicate shutter taps while capture is active.
+- [x] Show frame success only after file and database verification.
+- [x] Implement camera switching, flash, zoom, focus/exposure, and capability fallbacks.
+- [x] Implement grid, onion skin, onion opacity, and difference overlays.
+- [x] Implement self-timer and cancelable countdown.
+- [x] Implement interval capture, wake-lock handling, low-storage stop, and explicit start/stop.
+- [x] Implement supported volume-button shutter behavior.
+- [x] Implement single and batch image imports using project-owned copies.
+- [x] Implement frame review, retake, duplicate, delete, and undo.
+- [x] Add capture persistence, interruption, import, interval, permission, lifecycle, semantics, and golden tests.
+
+**Physical-device blocker:** Android/iOS camera orientation, plugin lifecycle, hardware volume keys, and device-specific capability evidence require configured Android/Xcode toolchains and physical devices. The package-independent contract, fake lifecycle suite, and adaptive UI are complete.
 
 **Phase gate:**
 
 - [ ] Capture at least 100 consecutive frames per supported platform without loss, duplication, or false success.
 - [ ] Captured and imported frames survive force-stop, picker revocation, rotation, and relaunch.
+
+**Gate blocker:** Relaunch and picker-copy durability pass automated tests. Force-stop, rotation, and 100-frame evidence remain physical-device release gates.
 
 ## Phase 4: Timeline And Editor Workspace
 
