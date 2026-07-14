@@ -49,8 +49,10 @@
 
 **Phase gate:**
 
-- [ ] A clean checkout formats, analyzes, tests, and builds Android/iOS debug artifacts in CI.
+- [x] A clean checkout formats, analyzes, tests, and builds Android/iOS debug artifacts in CI.
 - [x] Every declared route renders a stable screen or explicit error state.
+
+**CI evidence:** GitHub Actions run `29359184026` passed quality, Android debug APK, and iOS no-codesign build jobs for Phase 3 merge commit `d50e524`.
 
 ## Phase 2: Project Domain, Storage, And Library
 
