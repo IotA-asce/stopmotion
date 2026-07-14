@@ -28,4 +28,4 @@ Phases 1-8 are implemented in software: the Flutter foundation, durable project 
 
 ## Test APKs
 
-Pushing a tag matching `V*` builds an Android debug APK and attaches it to a GitHub prerelease. These APKs are for tester installation only and are not production-signed releases.
+Pushing a tag matching `V*` builds smaller Android release-mode APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, verifies their test signatures, and attaches them to a GitHub prerelease with SHA-256 checksums. Most physical Android phones use `arm64-v8a`. These APKs are for tester installation only and are not production-signed releases.
