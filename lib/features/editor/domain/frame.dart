@@ -1,3 +1,5 @@
+import 'frame_adjustments.dart';
+
 class ProjectFrame {
   const ProjectFrame({
     required this.id,
@@ -9,6 +11,7 @@ class ProjectFrame {
     required this.sourceWidth,
     required this.sourceHeight,
     required this.missing,
+    this.adjustments = const FrameAdjustments(),
   });
 
   final String id;
@@ -20,6 +23,7 @@ class ProjectFrame {
   final int sourceWidth;
   final int sourceHeight;
   final bool missing;
+  final FrameAdjustments adjustments;
 
   ProjectFrame copyWith({
     String? id,
@@ -27,6 +31,7 @@ class ProjectFrame {
     int? holdFrames,
     String? relativeSourcePath,
     bool? missing,
+    FrameAdjustments? adjustments,
   }) {
     return ProjectFrame(
       id: id ?? this.id,
@@ -38,6 +43,7 @@ class ProjectFrame {
       sourceWidth: sourceWidth,
       sourceHeight: sourceHeight,
       missing: missing ?? this.missing,
+      adjustments: adjustments ?? this.adjustments,
     );
   }
 }

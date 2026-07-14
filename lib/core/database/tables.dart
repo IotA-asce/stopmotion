@@ -29,6 +29,7 @@ class FrameRecords extends Table {
   IntColumn get sourceWidth => integer()();
   IntColumn get sourceHeight => integer()();
   BoolColumn get missing => boolean().withDefault(const Constant(false))();
+  TextColumn get adjustmentsJson => text().withDefault(const Constant('{}'))();
 
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};

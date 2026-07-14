@@ -6,6 +6,7 @@ import 'package:stop_motion/core/filesystem/project_paths.dart';
 import 'package:stop_motion/core/recovery/operation_journal.dart';
 import 'package:stop_motion/features/editor/data/editor_repository.dart';
 import 'package:stop_motion/features/editor/domain/frame.dart';
+import 'package:stop_motion/features/editor/domain/frame_adjustments.dart';
 import 'package:stop_motion/features/editor/domain/timeline.dart';
 import 'package:stop_motion/features/projects/data/project_repository.dart';
 import 'package:stop_motion/features/projects/domain/project.dart';
@@ -40,7 +41,10 @@ void main() {
     final List<ProjectFrame> frames =
         <ProjectFrame>[
               frame('a').copyWith(position: 0),
-              frame('b', hold: 4).copyWith(position: 1),
+              frame('b', hold: 4).copyWith(
+                position: 1,
+                adjustments: const FrameAdjustments(exposure: 0.75),
+              ),
               frame('c').copyWith(position: 2),
             ]
             .map(
@@ -54,6 +58,7 @@ void main() {
                 sourceWidth: value.sourceWidth,
                 sourceHeight: value.sourceHeight,
                 missing: value.missing,
+                adjustments: value.adjustments,
               ),
             )
             .toList();
@@ -76,6 +81,7 @@ void main() {
       'a',
     ]);
     expect(restored.frames[1].holdFrames, 4);
+    expect(restored.frames[1].adjustments.exposure, 0.75);
 
     await database.close();
     await root.delete(recursive: true);

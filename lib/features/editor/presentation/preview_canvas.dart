@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../../core/media/frame_renderer.dart';
+import '../../../core/widgets/rendered_frame_image.dart';
 import '../../projects/domain/project.dart';
 import '../domain/frame.dart';
 
@@ -10,12 +12,14 @@ class EditorPreviewCanvas extends StatelessWidget {
     required this.project,
     required this.frame,
     required this.resolveFrame,
+    required this.cache,
     super.key,
   });
 
   final Project project;
   final ProjectFrame? frame;
   final File Function(ProjectFrame frame) resolveFrame;
+  final FramePreviewCache cache;
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +48,13 @@ class EditorPreviewCanvas extends StatelessWidget {
     if (current.missing) {
       return const Center(child: Icon(Icons.broken_image_outlined, size: 52));
     }
-    return Image.file(
-      resolveFrame(current),
-      fit: BoxFit.contain,
-      errorBuilder: (_, _, _) =>
-          const Center(child: Icon(Icons.broken_image_outlined, size: 52)),
-      filterQuality: FilterQuality.medium,
+    return RenderedFrameImage(
+      cache: cache,
+      source: resolveFrame(current),
+      adjustments: current.adjustments,
+      targetWidth: project.aspectRatio.value >= 1 ? 640 : 360,
+      targetHeight: project.aspectRatio.value >= 1 ? 360 : 640,
+      backgroundColor: project.backgroundColorValue,
     );
   }
 }

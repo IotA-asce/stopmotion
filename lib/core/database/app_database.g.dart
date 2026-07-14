@@ -849,6 +849,18 @@ class $FrameRecordsTable extends FrameRecords
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _adjustmentsJsonMeta = const VerificationMeta(
+    'adjustmentsJson',
+  );
+  @override
+  late final GeneratedColumn<String> adjustmentsJson = GeneratedColumn<String>(
+    'adjustments_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -860,6 +872,7 @@ class $FrameRecordsTable extends FrameRecords
     sourceWidth,
     sourceHeight,
     missing,
+    adjustmentsJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -947,6 +960,15 @@ class $FrameRecordsTable extends FrameRecords
         missing.isAcceptableOrUnknown(data['missing']!, _missingMeta),
       );
     }
+    if (data.containsKey('adjustments_json')) {
+      context.handle(
+        _adjustmentsJsonMeta,
+        adjustmentsJson.isAcceptableOrUnknown(
+          data['adjustments_json']!,
+          _adjustmentsJsonMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -992,6 +1014,10 @@ class $FrameRecordsTable extends FrameRecords
         DriftSqlType.bool,
         data['${effectivePrefix}missing'],
       )!,
+      adjustmentsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}adjustments_json'],
+      )!,
     );
   }
 
@@ -1011,6 +1037,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
   final int sourceWidth;
   final int sourceHeight;
   final bool missing;
+  final String adjustmentsJson;
   const FrameRecord({
     required this.id,
     required this.projectId,
@@ -1021,6 +1048,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
     required this.sourceWidth,
     required this.sourceHeight,
     required this.missing,
+    required this.adjustmentsJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1034,6 +1062,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
     map['source_width'] = Variable<int>(sourceWidth);
     map['source_height'] = Variable<int>(sourceHeight);
     map['missing'] = Variable<bool>(missing);
+    map['adjustments_json'] = Variable<String>(adjustmentsJson);
     return map;
   }
 
@@ -1048,6 +1077,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
       sourceWidth: Value(sourceWidth),
       sourceHeight: Value(sourceHeight),
       missing: Value(missing),
+      adjustmentsJson: Value(adjustmentsJson),
     );
   }
 
@@ -1068,6 +1098,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
       sourceWidth: serializer.fromJson<int>(json['sourceWidth']),
       sourceHeight: serializer.fromJson<int>(json['sourceHeight']),
       missing: serializer.fromJson<bool>(json['missing']),
+      adjustmentsJson: serializer.fromJson<String>(json['adjustmentsJson']),
     );
   }
   @override
@@ -1083,6 +1114,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
       'sourceWidth': serializer.toJson<int>(sourceWidth),
       'sourceHeight': serializer.toJson<int>(sourceHeight),
       'missing': serializer.toJson<bool>(missing),
+      'adjustmentsJson': serializer.toJson<String>(adjustmentsJson),
     };
   }
 
@@ -1096,6 +1128,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
     int? sourceWidth,
     int? sourceHeight,
     bool? missing,
+    String? adjustmentsJson,
   }) => FrameRecord(
     id: id ?? this.id,
     projectId: projectId ?? this.projectId,
@@ -1106,6 +1139,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
     sourceWidth: sourceWidth ?? this.sourceWidth,
     sourceHeight: sourceHeight ?? this.sourceHeight,
     missing: missing ?? this.missing,
+    adjustmentsJson: adjustmentsJson ?? this.adjustmentsJson,
   );
   FrameRecord copyWithCompanion(FrameRecordsCompanion data) {
     return FrameRecord(
@@ -1126,6 +1160,9 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
           ? data.sourceHeight.value
           : this.sourceHeight,
       missing: data.missing.present ? data.missing.value : this.missing,
+      adjustmentsJson: data.adjustmentsJson.present
+          ? data.adjustmentsJson.value
+          : this.adjustmentsJson,
     );
   }
 
@@ -1140,7 +1177,8 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
           ..write('createdAt: $createdAt, ')
           ..write('sourceWidth: $sourceWidth, ')
           ..write('sourceHeight: $sourceHeight, ')
-          ..write('missing: $missing')
+          ..write('missing: $missing, ')
+          ..write('adjustmentsJson: $adjustmentsJson')
           ..write(')'))
         .toString();
   }
@@ -1156,6 +1194,7 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
     sourceWidth,
     sourceHeight,
     missing,
+    adjustmentsJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -1169,7 +1208,8 @@ class FrameRecord extends DataClass implements Insertable<FrameRecord> {
           other.createdAt == this.createdAt &&
           other.sourceWidth == this.sourceWidth &&
           other.sourceHeight == this.sourceHeight &&
-          other.missing == this.missing);
+          other.missing == this.missing &&
+          other.adjustmentsJson == this.adjustmentsJson);
 }
 
 class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
@@ -1182,6 +1222,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
   final Value<int> sourceWidth;
   final Value<int> sourceHeight;
   final Value<bool> missing;
+  final Value<String> adjustmentsJson;
   final Value<int> rowid;
   const FrameRecordsCompanion({
     this.id = const Value.absent(),
@@ -1193,6 +1234,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
     this.sourceWidth = const Value.absent(),
     this.sourceHeight = const Value.absent(),
     this.missing = const Value.absent(),
+    this.adjustmentsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FrameRecordsCompanion.insert({
@@ -1205,6 +1247,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
     required int sourceWidth,
     required int sourceHeight,
     this.missing = const Value.absent(),
+    this.adjustmentsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        projectId = Value(projectId),
@@ -1223,6 +1266,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
     Expression<int>? sourceWidth,
     Expression<int>? sourceHeight,
     Expression<bool>? missing,
+    Expression<String>? adjustmentsJson,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1236,6 +1280,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
       if (sourceWidth != null) 'source_width': sourceWidth,
       if (sourceHeight != null) 'source_height': sourceHeight,
       if (missing != null) 'missing': missing,
+      if (adjustmentsJson != null) 'adjustments_json': adjustmentsJson,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1250,6 +1295,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
     Value<int>? sourceWidth,
     Value<int>? sourceHeight,
     Value<bool>? missing,
+    Value<String>? adjustmentsJson,
     Value<int>? rowid,
   }) {
     return FrameRecordsCompanion(
@@ -1262,6 +1308,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
       sourceWidth: sourceWidth ?? this.sourceWidth,
       sourceHeight: sourceHeight ?? this.sourceHeight,
       missing: missing ?? this.missing,
+      adjustmentsJson: adjustmentsJson ?? this.adjustmentsJson,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1296,6 +1343,9 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
     if (missing.present) {
       map['missing'] = Variable<bool>(missing.value);
     }
+    if (adjustmentsJson.present) {
+      map['adjustments_json'] = Variable<String>(adjustmentsJson.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1314,6 +1364,7 @@ class FrameRecordsCompanion extends UpdateCompanion<FrameRecord> {
           ..write('sourceWidth: $sourceWidth, ')
           ..write('sourceHeight: $sourceHeight, ')
           ..write('missing: $missing, ')
+          ..write('adjustmentsJson: $adjustmentsJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3919,6 +3970,7 @@ typedef $$FrameRecordsTableCreateCompanionBuilder =
       required int sourceWidth,
       required int sourceHeight,
       Value<bool> missing,
+      Value<String> adjustmentsJson,
       Value<int> rowid,
     });
 typedef $$FrameRecordsTableUpdateCompanionBuilder =
@@ -3932,6 +3984,7 @@ typedef $$FrameRecordsTableUpdateCompanionBuilder =
       Value<int> sourceWidth,
       Value<int> sourceHeight,
       Value<bool> missing,
+      Value<String> adjustmentsJson,
       Value<int> rowid,
     });
 
@@ -4004,6 +4057,11 @@ class $$FrameRecordsTableFilterComposer
 
   ColumnFilters<bool> get missing => $composableBuilder(
     column: $table.missing,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get adjustmentsJson => $composableBuilder(
+    column: $table.adjustmentsJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4080,6 +4138,11 @@ class $$FrameRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get adjustmentsJson => $composableBuilder(
+    column: $table.adjustmentsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ProjectRecordsTableOrderingComposer get projectId {
     final $$ProjectRecordsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4145,6 +4208,11 @@ class $$FrameRecordsTableAnnotationComposer
   GeneratedColumn<bool> get missing =>
       $composableBuilder(column: $table.missing, builder: (column) => column);
 
+  GeneratedColumn<String> get adjustmentsJson => $composableBuilder(
+    column: $table.adjustmentsJson,
+    builder: (column) => column,
+  );
+
   $$ProjectRecordsTableAnnotationComposer get projectId {
     final $$ProjectRecordsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -4206,6 +4274,7 @@ class $$FrameRecordsTableTableManager
                 Value<int> sourceWidth = const Value.absent(),
                 Value<int> sourceHeight = const Value.absent(),
                 Value<bool> missing = const Value.absent(),
+                Value<String> adjustmentsJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FrameRecordsCompanion(
                 id: id,
@@ -4217,6 +4286,7 @@ class $$FrameRecordsTableTableManager
                 sourceWidth: sourceWidth,
                 sourceHeight: sourceHeight,
                 missing: missing,
+                adjustmentsJson: adjustmentsJson,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4230,6 +4300,7 @@ class $$FrameRecordsTableTableManager
                 required int sourceWidth,
                 required int sourceHeight,
                 Value<bool> missing = const Value.absent(),
+                Value<String> adjustmentsJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FrameRecordsCompanion.insert(
                 id: id,
@@ -4241,6 +4312,7 @@ class $$FrameRecordsTableTableManager
                 sourceWidth: sourceWidth,
                 sourceHeight: sourceHeight,
                 missing: missing,
+                adjustmentsJson: adjustmentsJson,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

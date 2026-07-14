@@ -7,6 +7,7 @@ import '../core/widgets/feature_boundary_page.dart';
 import '../features/capture/presentation/capture_page.dart';
 import '../features/editor/presentation/editor_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
+import '../features/preview/presentation/preview_page.dart';
 import '../features/projects/presentation/create_project_page.dart';
 import '../features/projects/presentation/projects_page.dart';
 import '../features/recovery/presentation/recovery_page.dart';
@@ -97,7 +98,14 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.projects}) {
             EditorPage(projectId: state.pathParameters['projectId']!),
       ),
       _workspaceRoute('audio', 'Audio', 6),
-      _workspaceRoute('preview', 'Preview', 5),
+      GoRoute(
+        path: '/project/:projectId/preview',
+        builder: (BuildContext context, GoRouterState state) => PreviewPage(
+          projectId: state.pathParameters['projectId']!,
+          initialFrame:
+              int.tryParse(state.uri.queryParameters['frame'] ?? '') ?? 0,
+        ),
+      ),
       _workspaceRoute('export', 'Export', 7),
     ],
   );
