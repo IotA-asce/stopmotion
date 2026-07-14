@@ -18,6 +18,7 @@
 ## Current Documentation
 
 - Treat `docs/FINAL_STATE.md` as the product contract for the first public release.
+- Use `docs/DEVELOPMENT_PHASES.md` as the shared progress checklist and update it in the commit that completes an item.
 - Follow `docs/plans/2026-07-14-first-public-release.md` for implementation order and verification.
 - Update both files when approved scope or release behavior changes.
 

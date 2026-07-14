@@ -710,3 +710,774 @@ The following ranges are reserved for implementation and test traceability. Each
 | `REL-OPS-001` to `REL-OPS-025` | Platform artifacts, offline/privacy/security, diagnostics, dependency review, quality gates, store readiness, and release evidence in sections 3, 16, and 19-21 |
 
 When implementation starts, `docs/release/requirement-traceability.md` must expand these ranges into atomic rows as tests are designed. An ID may be marked complete only when its implementation and evidence links both exist.
+
+## 24. UI Page Blueprints
+
+### 24.1 Blueprint status and notation
+
+These Markdown wireframes are the authoritative page compositions for 1.0. They define hierarchy, controls, placement, navigation, and states. They are not pixel-perfect screenshots. Final Flutter implementation must use the design tokens in section 4 and preserve the behavior specified in the corresponding feature sections.
+
+Wireframes show a typical phone portrait viewport unless labeled otherwise.
+
+- Text in square brackets represents a control, field, image, or system surface.
+- Icon names describe Material Symbols or the repository's selected consistent icon set; the rendered UI uses the icon, not the name in brackets.
+- A `*` marks the selected item in text-only diagrams. Production UI also uses accent color and semantics.
+- Sheets rise from the bottom on phones and may become centered dialogs on wide layouts.
+- Toolbars and timelines use `surfaceMuted`; menus and sheets use `surfaceRaised`.
+- The preview, camera, and full-screen media surfaces use black or the project canvas color around content.
+- All icon controls are at least 48 by 48 logical pixels and expose tooltip and semantic labels.
+
+### 24.2 Page inventory
+
+| ID | Page or surface | Route or owner | Primary completion action |
+| --- | --- | --- | --- |
+| `UI-01` | Launch and recovery check | App bootstrap | Continue to recovery, onboarding, or projects |
+| `UI-02` | Welcome | `/onboarding` | Start creating |
+| `UI-03` | Permission primer | `/onboarding` | Continue or skip |
+| `UI-04` | Projects library | `/projects` | Open or create project |
+| `UI-05` | Create project sheet | `/projects/new` | Create |
+| `UI-06` | Project details sheet | Projects or editor overlay | Done |
+| `UI-07` | Capture workspace | `/project/:projectId/capture` | Open editor |
+| `UI-08` | Frame review | Capture overlay | Done, retake, or delete |
+| `UI-09` | Editor workspace | `/project/:projectId/edit` | Preview or export |
+| `UI-10` | Frame inspector and crop | Editor lower sheet/pane | Apply or done |
+| `UI-11` | Audio workspace | `/project/:projectId/audio` | Done |
+| `UI-12` | Full-screen preview | `/project/:projectId/preview` | Return to workspace |
+| `UI-13` | Export setup | `/project/:projectId/export` | Export |
+| `UI-14` | Export progress and result | Export route state | Share, save, or done |
+| `UI-15` | Recovery center | `/recovery` | Resolve or postpone |
+| `UI-16` | Settings | `/settings` | Back or top-level navigation |
+| `UI-17` | Storage management | Settings subroute | Back |
+| `UI-18` | Help, privacy, and about | Settings subroutes | Back |
+
+### 24.3 UI-01: Launch and recovery check
+
+The launch surface appears only while local settings, migrations, and recovery journals are checked. It must not flash after a warm route restoration.
+
+```text
++--------------------------------------+
+|                                      |
+|                                      |
+|             STOP MOTION              |
+|                                      |
+|             [progress]               |
+|                                      |
+|         Opening your projects        |
+|                                      |
+|                                      |
++--------------------------------------+
+```
+
+State rules:
+
+- Normal checks complete silently and route onward.
+- A migration or interrupted-operation problem replaces this surface with `UI-15`.
+- If startup exceeds two seconds, show the current safe stage without exposing file paths.
+- A fatal initialization error shows `Try again`, `Export diagnostics`, and `Open help`.
+
+### 24.4 UI-02: Welcome
+
+```text
++--------------------------------------+
+|                              [theme] |
+|                                      |
+|             STOP MOTION              |
+|                                      |
+|  [frame 1] [frame 2] [frame 3]       |
+|                                      |
+|  Make your first film, one frame     |
+|  at a time.                          |
+|                                      |
+|  Your projects stay on this device   |
+|  until you export or share them.     |
+|                                      |
+|  [          Start creating         ] |
+|                                      |
+|  [ How your projects are stored ]    |
+|                                      |
++--------------------------------------+
+```
+
+- The frame strip uses an application asset with meaningful semantic description.
+- `Start creating` advances to the permission primer.
+- The storage command opens a concise sheet and returns to this page.
+- At 200% text scale, the frame strip may shorten vertically; commands must remain fully visible and scrollable.
+
+### 24.5 UI-03: Permission primer
+
+```text
++--------------------------------------+
+| [arrow_back]              Setup 1/1  |
+|                                      |
+|              [camera]                |
+|                                      |
+|  Camera access                       |
+|  Needed only when you capture        |
+|  frames. You can still import images |
+|  without it.                         |
+|                                      |
+|              [mic]                   |
+|                                      |
+|  Microphone access                   |
+|  Requested later, only if you record |
+|  narration.                          |
+|                                      |
+|  [             Continue            ] |
+|  [            Not now              ] |
++--------------------------------------+
+```
+
+- Neither command triggers microphone permission.
+- Camera permission is requested when Capture first needs it, after the user continues.
+- `Not now` opens Projects and leaves capture/import choices available.
+
+### 24.6 UI-04: Projects library
+
+```text
++--------------------------------------+
+| Projects              [search] [...] |
+| [ All v ] [ Last edited v ] [grid]   |
+|--------------------------------------|
+| +----------------+ +---------------+ |
+| | [thumbnail]    | | [thumbnail]   | |
+| | Paper planets  | | Clay walk     | |
+| | 48 fr - 0:04   | | 96 fr - 0:08 | |
+| | Edited 2m  ... | | Exported  ... | |
+| +----------------+ +---------------+ |
+|                                      |
+| +----------------+ +---------------+ |
+| | [thumbnail]    | | [thumbnail]   | |
+| | Science demo   | | Birthday      | |
+| | 120 fr - 0:10  | | 72 fr - 0:06 | |
+| | Yesterday  ... | | Jun 18    ... | |
+| +----------------+ +---------------+ |
+|                              +-------|
+|                              | + New |
+|------------------------------+-------|
+| [folder] Projects        [settings]  |
++--------------------------------------+
+```
+
+Interaction details:
+
+- Tapping a project opens Editor when frames exist and Capture when it is empty.
+- Long press enters project selection only if batch project operations are added to 1.0; otherwise it opens no hidden behavior.
+- Project overflow contains Rename, Duplicate, Details, and Delete.
+- Search replaces the title row with an input, clear icon, and back icon while preserving filter state.
+- Grid/list is a segmented icon control. List mode keeps thumbnail, title, metadata, and overflow on one stable row.
+
+Empty state:
+
+```text
++--------------------------------------+
+| Projects              [search] [...] |
+|                                      |
+|          [three-frame strip]         |
+|                                      |
+|        Create your first film        |
+|                                      |
+|  [           New project           ] |
+|                                      |
+|--------------------------------------|
+| [folder] Projects        [settings]  |
++--------------------------------------+
+```
+
+### 24.7 UI-05: Create project sheet
+
+```text
+                dimmed Projects
++--------------------------------------+
+|             New project              |
+|                                      |
+| Title                                |
+| [ Untitled film 1                  ] |
+|                                      |
+| Aspect ratio                         |
+| [ 16:9* ] [ 9:16 ] [ 1:1 ] [ 4:3 ] |
+|                                      |
+| Frame rate                           |
+| [ - ]             12 fps       [ + ] |
+| [6] [8] [10] [12*] [15] [24]        |
+|                                      |
+| Resolution                           |
+| [ 720p ] [ 1080p* ]                 |
+|                                      |
+| Background                 [swatch]  |
+|                                      |
+| [ Cancel ]              [ Create ]   |
++--------------------------------------+
+```
+
+- Title error appears directly below the field without moving the action row off-screen.
+- Tapping the background swatch opens a compact palette plus custom color picker.
+- Custom fps replaces the stepper value with a numeric field constrained to 1-30.
+- `Create` shows an inline spinner and is disabled while the atomic project creation runs.
+
+### 24.8 UI-06: Project details sheet
+
+```text
++--------------------------------------+
+| Project details              [close] |
+|--------------------------------------|
+| [thumbnail 16:9]                     |
+|                                      |
+| Paper planets                        |
+| Draft                                |
+|                                      |
+| Frames                         48    |
+| Duration                       0:04  |
+| Canvas                         1080p |
+| Frame rate                     12 fps|
+| Project size                   84 MB |
+| Created                        Jul 14|
+| Last edited                    2m ago|
+| Last export                    None  |
+|                                      |
+| [rename] Rename   [copy] Duplicate   |
+| [delete] Move to trash               |
+|                                      |
+| [                 Done             ] |
++--------------------------------------+
+```
+
+- Destructive action uses danger color and opens a named confirmation.
+- On a damaged project, the status row becomes `Needs repair` with `Open recovery`.
+
+### 24.9 UI-07: Capture workspace
+
+```text
++--------------------------------------+
+|[back] Paper planets  48 [flash][flip]|
+|--------------------------------------|
+|                                      |
+|                                      |
+|          LIVE CAMERA PREVIEW         |
+|                                      |
+|       + onion skin / grid layer      |
+|                                      |
+|                         [zoom 1.0x]  |
+|                                      |
+| [onion]                              |
+| [grid]                               |
+| [exposure]                           |
+| [timer]                              |
+| [interval]                           |
+|                                      |
+|--------------------------------------|
+| [45] [46] [47] [48*] [ + import ]   |
+|                                      |
+| [gallery]    (   SHUTTER   ) [edit] |
++--------------------------------------+
+```
+
+Capture behavior and placement:
+
+- Top and side controls overlay safe preview areas with a scrim that preserves media visibility.
+- The shutter remains centered and fixed at 72 logical pixels.
+- The current durable frame count is part of the title row and announced after successful capture.
+- Onion skin opens an anchored opacity slider. Grid opens a compact mode menu.
+- Timer and interval use mutually clear active states. Interval replaces the shutter with `Stop` and shows elapsed count/time.
+- Import uses the system picker; the gallery icon may show the last project thumbnail but never an external-library thumbnail without permission.
+- `edit` opens Editor at the last frame. Back settles any active capture transaction before leaving.
+
+Denied-camera state:
+
+```text
++--------------------------------------+
+|[back] Paper planets            [...] |
+|                                      |
+|              [camera_off]            |
+|                                      |
+|       Camera access is off           |
+|  Allow access in Settings, or import |
+|  images to continue this project.    |
+|                                      |
+|  [ Open settings ]  [ Import images ]|
+|                                      |
+|--------------------------------------|
+| [45] [46] [47] [48*]                |
+|                         [ Open editor]|
++--------------------------------------+
+```
+
+Landscape adaptation:
+
+```text
++------------------------------------------------------------------+
+|[back] Paper planets 48                           [flash][flip][...]|
+|----------------------------+-------------------------------------|
+| [onion] [grid] [exposure]  |                                     |
+| [timer] [interval]         |         LIVE CAMERA PREVIEW         |
+|                            |                                     |
+| [45]                       |                         ( SHUTTER )   |
+| [46]                       |                                     |
+| [47]                       |                           [edit]      |
+| [48*] [import]             |                                     |
++----------------------------+-------------------------------------+
+```
+
+### 24.10 UI-08: Frame review
+
+```text
++--------------------------------------+
+| [close]        Frame 48        [...] |
+|--------------------------------------|
+|                                      |
+|                                      |
+|            FRAME PREVIEW             |
+|                                      |
+|                                      |
+|--------------------------------------|
+| [previous]                    [next]  |
+|                                      |
+| [camera] Retake   [copy] Duplicate   |
+| [delete] Delete frame                |
+|                                      |
+| [                 Done             ] |
++--------------------------------------+
+```
+
+- Delete offers Undo after returning to Capture.
+- Retake does not replace the selected timeline entry until the new frame is durable.
+- The overflow offers `Set as project thumbnail` only if that feature is retained in implementation scope; otherwise the menu is omitted.
+
+### 24.11 UI-09: Editor workspace
+
+```text
++--------------------------------------+
+|[back] Paper planets [undo][redo][...]|
+|--------------------------------------|
+|                                      |
+|            PREVIEW CANVAS            |
+|               16:9                   |
+|                                      |
+|--------------------------------------|
+|[first][prev] [play] [next] [loop]    |
+| 00:01:08                       00:04 |
+|--------------------------------------|
+|       | playhead                     |
+| [45] [46] [47*2] [48] [49] [50]     |
+|       |                              |
+| music |===== waveform =====|         |
+|--------------------------------------|
+| [capture] [frames*] [adjust] [audio] |
+|                         [export]      |
++--------------------------------------+
+```
+
+Editor details:
+
+- The app bar title is tappable for rename but does not become an accidental drag target.
+- A saving indicator appears beside the title only when persistence exceeds 300 milliseconds.
+- Selected frame shows accent border plus semantic selected state. Hold duration appears as `x2`, `x3`, and so on.
+- Long press enters multi-select. A contextual app bar then shows selected count, select all, duplicate, reverse, hold, and delete.
+- Pinch on timeline or a zoom command changes frame width without changing fps.
+- `capture` returns to Capture. `adjust` opens `UI-10`. `audio` opens `UI-11`. `export` opens `UI-13`.
+- Tapping preview toggles transport visibility; long press performs before/after comparison only while adjustments are active.
+
+Landscape/tablet editor:
+
+```text
++------------------------------------------------------------------+
+|[back] Paper planets                      [undo][redo][preview][...]|
+|--------------------------------------+---------------------------|
+|                                      | Frame 47                  |
+|            PREVIEW CANVAS            | [crop] [rotate] [flip]    |
+|                                      | Exposure        0.0       |
+|                                      | [------o-------]           |
+|--------------------------------------| Contrast        0.0       |
+|[first][prev][play][next][loop] 00:04 | [------o-------]           |
+|--------------------------------------+ [ Reset ]                 |
+|       | playhead                                                 |
+| [45] [46] [47*2] [48] [49] [50] [51] [52]                      |
+| music |================ waveform ====================|           |
+|------------------------------------------------------------------|
+|[capture] [frames*] [adjust] [audio]                    [export]   |
++------------------------------------------------------------------+
+```
+
+### 24.12 UI-10: Frame inspector and crop
+
+Adjustment sheet:
+
+```text
+              Editor remains visible
++--------------------------------------+
+| Frame adjustments             [done] |
+| [ Transform* ] [ Light ] [ Color ]   |
+|--------------------------------------|
+| [crop] Crop       [rotate] Rotate    |
+| [flip_h] Flip H   [flip_v] Flip V    |
+|                                      |
+| Fit                                  |
+| [ Fit* ] [ Fill ] [ Original ]       |
+|                                      |
+| Apply to                             |
+| [ This frame v ]                     |
+|                                      |
+| [reset] Reset adjustments            |
++--------------------------------------+
+```
+
+Light/color controls use the same stable row pattern:
+
+```text
+| Exposure                         0.0 |
+| [minus] [---------o---------] [plus]|
+| Contrast                         0.0 |
+| [minus] [---------o---------] [plus]|
+```
+
+- Tapping the numeric value opens a bounded numeric field for accessible precision.
+- `Apply to` options are This frame, Selected frames, and This and following frames; unavailable scopes are hidden.
+- Reset is immediate but undoable.
+
+Crop mode:
+
+```text
++--------------------------------------+
+| [cancel]        Crop          [done] |
+|--------------------------------------|
+|                                      |
+|       +----------------------+       |
+|       |                      |       |
+|       |    FRAME + GRID      |       |
+|       |                      |       |
+|       +----------------------+       |
+|                                      |
+| Straighten                     0.0   |
+| [rotate_l] [-----o------] [rotate_r]|
+|                                      |
+| [ Reset ]         [ Fit ] [ Fill ]   |
++--------------------------------------+
+```
+
+### 24.13 UI-11: Audio workspace
+
+```text
++--------------------------------------+
+|[back] Audio - Paper planets   [done] |
+|--------------------------------------|
+|            PREVIEW CANVAS            |
+|--------------------------------------|
+|[first][prev] [play] [next]  00:04    |
+|--------------------------------------|
+|       | playhead                     |
+|frames |45|46|47|48|49|50|            |
+|narr.  |==== narration waveform ====| |
+|music  |  ===== music waveform ====|  |
+|fx     |              == effect ==|   |
+|--------------------------------------|
+| [mic] Record narration               |
+| [audio_file] Import audio            |
+|                                      |
+| Selected: narration                  |
+| [trim] [split] [mute] [delete]       |
+| Volume 100%       Fade in 0.5s       |
++--------------------------------------+
+```
+
+Recording state:
+
+- A three-second count-in replaces the primary controls without moving the timeline.
+- During recording, show elapsed time, input meter, pause/resume, and fixed red Stop control.
+- If permission is denied, the record row explains recovery while Import audio remains enabled.
+- Selecting a clip exposes trim handles and a property pane/sheet with numeric start, end, volume, fade, mute, and rename controls.
+
+### 24.14 UI-12: Full-screen preview
+
+```text
++--------------------------------------+
+|[close]                       [quality]|
+|                                      |
+|                                      |
+|            PROJECT CANVAS            |
+|                                      |
+|                                      |
+|                                      |
+|--------------------------------------|
+| 00:01 [=========o==========] 00:04   |
+| [first]       [play]        [loop]   |
++--------------------------------------+
+```
+
+- Controls fade after two seconds of playback and return on tap or accessibility focus.
+- The close icon always remains discoverable to screen readers even when visual controls are hidden.
+- Quality menu contains Automatic, Full, and Performance.
+- System back returns to the originating workspace and exact playhead.
+
+### 24.15 UI-13: Export setup
+
+```text
++--------------------------------------+
+|[back] Export                         |
+|--------------------------------------|
+| [project thumbnail]                  |
+| Paper planets                 00:04  |
+|                                      |
+| Format                               |
+| [ Movie* ] [ GIF ] [ Images ]        |
+|                                      |
+| Resolution                           |
+| [ 720p ] [ 1080p* ]                 |
+|                                      |
+| Quality                              |
+| [ Balanced v ]                       |
+|                                      |
+| Frame rate                  12 fps   |
+| Audio                       Included |
+| Estimated size              8-14 MB  |
+|                                      |
+| [             Export              ]  |
++--------------------------------------+
+```
+
+Format-specific substitutions:
+
+- GIF replaces resolution presets with bounded dimensions and adds loop behavior. It displays `Audio is not included in GIF files`.
+- Images adds PNG/JPEG, quality when JPEG is selected, and transparent background only when valid.
+- A preflight warning appears inline above Export and links to the exact missing frame, storage, or unsupported-setting resolution.
+- Re-export opens with the previous successful settings and labels them `Last used`.
+
+### 24.16 UI-14: Export progress and result
+
+Progress:
+
+```text
++--------------------------------------+
+| Exporting Paper planets              |
+|                                      |
+| [project thumbnail]                  |
+|                                      |
+| Rendering frames                     |
+| [=================-------] 68%       |
+| 136 of 200 frames                    |
+| Elapsed 00:18                        |
+|                                      |
+| You can leave this screen.           |
+|                                      |
+| [             Cancel              ]  |
++--------------------------------------+
+```
+
+Completed:
+
+```text
++--------------------------------------+
+| Export complete                      |
+|                                      |
+| [video thumbnail with play]          |
+|                                      |
+| Paper planets.mp4                    |
+| 1080p - 12 fps - 11.2 MB             |
+|                                      |
+| [share] Share      [save] Save       |
+| [open] Open file                     |
+|                                      |
+| [              Done               ]  |
++--------------------------------------+
+```
+
+- Cancellation confirmation explains that incomplete output will be removed.
+- Failure uses the same composition with failed stage, plain-language reason, `Try again`, `Change settings`, and `Export diagnostics`.
+- Share-target cancellation returns to Completed and is not reported as export failure.
+
+### 24.17 UI-15: Recovery center
+
+```text
++--------------------------------------+
+| Recovery                             |
+|--------------------------------------|
+| Some project operations need review. |
+| Your valid source files are kept.    |
+|                                      |
+| +----------------------------------+ |
+| | Paper planets                    | |
+| | Capture interrupted             | |
+| | One temporary frame was found.  | |
+| | [ Repair ]  [ Remove temp file ]| |
+| +----------------------------------+ |
+|                                      |
+| +----------------------------------+ |
+| | Clay walk                       | |
+| | Audio file missing              | |
+| | Frames are unaffected.          | |
+| | [ Open project ] [ Keep later ] | |
+| +----------------------------------+ |
+|                                      |
+| [ Export diagnostics ]              |
+| [ Continue with resolved projects ] |
++--------------------------------------+
+```
+
+- Each repeated item is a genuine recovery card with project, operation, impact, and available actions.
+- Destructive recovery choices require confirmation and never present themselves as the default primary action.
+- Continue is enabled once blocking migrations are resolved; repairable media issues may be kept for later.
+
+### 24.18 UI-16: Settings
+
+```text
++--------------------------------------+
+| Settings                             |
+|--------------------------------------|
+| Capture defaults                     |
+| [camera] Capture                 [>] |
+|                                      |
+| Export defaults                      |
+| [export] Export                  [>] |
+|                                      |
+| App                                  |
+| [theme] Appearance      System   [>] |
+| [accessibility] Accessibility    [>] |
+| [storage] Storage        1.4 GB   [>]|
+|                                      |
+| Support and privacy                  |
+| [shield] Privacy                 [>] |
+| [help] Help and troubleshooting [>] |
+| [info] About                     [>] |
+|                                      |
+|--------------------------------------|
+| [folder] Projects        [settings*] |
++--------------------------------------+
+```
+
+- Settings are grouped in full-width list sections, not nested cards.
+- Binary options use switches; modes use segmented controls or menus; numbers use steppers/sliders plus exact values.
+- Descriptions appear only where a setting's consequence is not clear from its label.
+
+Capture defaults subpage:
+
+```text
++--------------------------------------+
+|[back] Capture defaults               |
+| Aspect ratio                  16:9 [>]|
+| Frame rate                  12 fps [>]|
+| Resolution                   1080p [>]|
+| Grid                           Off [>]|
+| Onion skin opacity             40%   |
+| [----------o-------------]           |
+| Volume button shutter          [on]  |
+| Keep screen awake              [on]  |
+|                                      |
+| [ Reset capture defaults ]           |
++--------------------------------------+
+```
+
+### 24.19 UI-17: Storage management
+
+```text
++--------------------------------------+
+|[back] Storage                        |
+|--------------------------------------|
+| Used by Stop Motion          1.4 GB  |
+| [projects===============]  1.2 GB    |
+| [cache===]                  120 MB    |
+| [trash=]                     80 MB    |
+|                                      |
+| Projects                             |
+| Paper planets                 420 MB  |
+| Clay walk                     310 MB  |
+| Science demo                  280 MB  |
+| [ Show all projects ]                 |
+|                                      |
+| Cache                                |
+| Safe to recreate.                    |
+| [ Clear cache ]                      |
+|                                      |
+| Trash                                |
+| 3 projects - removed in 4-7 days     |
+| [ Review trash ] [ Empty trash ]     |
++--------------------------------------+
+```
+
+- Storage bars use labels and values in addition to color.
+- Clear cache states that source media and exports are unaffected.
+- Empty trash is danger-styled and names item count and permanent effect in confirmation.
+
+### 24.20 UI-18: Help, privacy, and about
+
+Help:
+
+```text
++--------------------------------------+
+|[back] Help                           |
+| [search] Search help                 |
+|                                      |
+| Creating a project               [>] |
+| Capturing with onion skin        [>] |
+| Editing frame timing             [>] |
+| Adding narration and music       [>] |
+| Exporting and sharing            [>] |
+|                                      |
+| Troubleshooting                      |
+| Camera access                    [>] |
+| Low storage                     [>] |
+| Missing media                   [>] |
+| Export failed                   [>] |
+|                                      |
+| [ Contact support ]                  |
+| [ Export diagnostics ]               |
++--------------------------------------+
+```
+
+Privacy:
+
+- Lead with the local-storage statement and list what leaves the device only after an explicit share, save, support, or optional diagnostic action.
+- Provide links to the full privacy policy, system permissions, diagnostic contents, and open-source licenses.
+- Diagnostic consent is separate from the privacy-policy link and remains off by default for 1.0.
+
+About:
+
+- Show application name, version, build number, platform, support link, privacy policy, and open-source licenses.
+- Do not expose internal build paths, signing identifiers, or device identifiers.
+
+### 24.21 Shared modal and transient surfaces
+
+| Surface | Required content and behavior |
+| --- | --- |
+| Delete frames | Names selected frame count, explains undo, and focuses Cancel by default |
+| Move project to trash | Names project, seven-day recovery, Cancel, and Move to trash |
+| Empty trash | Names project count and permanent effect; danger action is not preselected |
+| Low storage | Required free-space estimate, Manage storage, and Cancel |
+| Save state | Appears beside project title only after 300 milliseconds; `Saved` requires committed revision |
+| Snackbar | One short result plus at most one action; never the only report of a critical failure |
+| Permission denied | Explains affected action, keeps unaffected workflows enabled, and offers Settings when useful |
+| Unsupported capability | Disabled or omitted control plus an explanation from nearby help or tooltip |
+| Numeric adjustment | Labeled bounded input, current unit, Cancel, and Apply |
+| Color picker | Semantic swatches, custom picker, contrast-aware selection marker, Cancel, and Apply |
+
+### 24.22 Responsive rules
+
+- **Compact under 600 logical pixels:** One primary pane, bottom navigation at top level, bottom sheets for inspectors, two-column project grid when cards remain at least 156 logical pixels wide.
+- **Medium 600-839:** Navigation rail at top level, two- or three-column project grid, editor inspector may stay open beside preview in landscape.
+- **Expanded 840 and above:** Navigation rail, three- or four-column project grid, persistent editor inspector, full-width timeline below preview/inspector split.
+- Capture preview always gets the largest contiguous area and never sits inside a decorative card.
+- Timeline height is constrained and does not grow when labels, selection count, or waveforms change.
+- Modal sheets become dialogs only when doing so reduces travel and preserves context; destructive confirmations remain compact dialogs.
+- Safe areas, display cutouts, camera holes, system gestures, keyboard insets, and platform navigation are respected.
+
+### 24.23 UI state matrix
+
+Every page must implement its applicable states before the page is considered complete.
+
+| Page | Loading | Empty | Permission denied | Recoverable error | Fatal/local error | Active operation |
+| --- | --- | --- | --- | --- | --- | --- |
+| Projects | Stable thumbnail placeholders | First-film state | Not applicable | Damaged project tile | Retry and diagnostics | Duplicate/delete progress |
+| Capture | Camera initialization | Zero-frame filmstrip | Camera-off import state | Retry capture | Leave safely and diagnostics | Saving, timer, interval |
+| Editor | Progressive thumbnails | Empty project opens Capture | Media access repair | Missing frame marker | Return to Projects | Saving/rendering preview |
+| Audio | Waveform placeholders | Add narration/import | Record denied, import enabled | Unreadable muted clip | Return to Editor | Recording/analyzing waveform |
+| Export | Preflight | Not allowed for zero frames | Save-library denial only | Change settings/retry | Return to Editor | Render/mix/package/share |
+| Recovery | Consistency scan | Route onward automatically | Not applicable | Keep for later | Export diagnostics | Repairing item |
+| Storage | Measuring categories | Zero usage | Platform storage limitation | Retry measurement | Return to Settings | Clearing/restoring/deleting |
+
+### 24.24 Icon and control contract
+
+- Use one icon family consistently. Prefer Flutter Material Symbols unless an approved design-system decision selects another complete Flutter-compatible family.
+- Familiar icon-only actions: back, close, search, undo, redo, play/pause, previous/next, loop, camera switch, flash, grid, delete, duplicate, share, save, and overflow.
+- Pair icons with text for primary workflow transitions: New project, Import images, Open editor, Record narration, Export, Repair, and Open settings.
+- Provide tooltips for unfamiliar capture/editor tools and all icon-only desktop/tablet hover states.
+- Use segmented controls for format, aspect ratio, theme mode, and mutually exclusive fit/fill choices.
+- Use switches only for immediate binary settings.
+- Use sliders with visible values and exact numeric alternatives for opacity, exposure, adjustments, volume, fades, zoom, and timeline scale.
+- Disable async commands while their non-repeatable operation is active and show progress in the same control or adjacent status area.
