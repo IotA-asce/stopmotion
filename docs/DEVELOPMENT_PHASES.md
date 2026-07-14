@@ -56,23 +56,23 @@
 
 **Plan mapping:** Tasks 3-5
 
-- [ ] Define validated domain models for projects, frames, timeline entries, audio clips, exports, settings, and journals.
-- [ ] Implement the transactional database schema, indexes, foreign keys, and migration baseline.
-- [ ] Implement project-owned directory structure and relative media paths.
-- [ ] Implement atomic file acceptance and read-back verification.
-- [ ] Implement operation journals and fault-injection test adapters.
-- [ ] Implement project create, rename, duplicate, details, trash, restore, and permanent delete.
-- [ ] Implement thumbnail generation and disposable thumbnail caching.
-- [ ] Implement first-run onboarding without premature permission prompts.
-- [ ] Implement Projects grid/list layouts, search, sort, and filters.
-- [ ] Implement empty, loading, no-results, damaged-project, and low-storage library states.
-- [ ] Implement the Create Project and Project Details sheets.
-- [ ] Add project lifecycle, migration, storage interruption, widget, semantics, and golden tests.
+- [x] Define validated domain models for projects, frames, timeline entries, audio clips, exports, settings, and journals.
+- [x] Implement the transactional database schema, indexes, foreign keys, and migration baseline.
+- [x] Implement project-owned directory structure and relative media paths.
+- [x] Implement atomic file acceptance and read-back verification.
+- [x] Implement operation journals and fault-injection test adapters.
+- [x] Implement project create, rename, duplicate, details, trash, restore, and permanent delete.
+- [x] Implement thumbnail generation and disposable thumbnail caching.
+- [x] Implement first-run onboarding without premature permission prompts.
+- [x] Implement Projects grid/list layouts, search, sort, and filters.
+- [x] Implement empty, loading, no-results, damaged-project, and low-storage library states.
+- [x] Implement the Create Project and Project Details sheets.
+- [x] Add project lifecycle, migration, storage interruption, widget, semantics, and golden tests.
 
 **Phase gate:**
 
-- [ ] Projects and metadata survive restart and process death.
-- [ ] No storage fault can create a phantom project or silently remove the only valid media copy.
+- [x] Projects and metadata survive restart and process death.
+- [x] No storage fault can create a phantom project or silently remove the only valid media copy.
 
 ## Phase 3: Camera, Durable Capture, And Import
 

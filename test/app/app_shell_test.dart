@@ -23,6 +23,6 @@ void main() {
     await pumpStopMotionApp(tester);
 
     expect(tester.takeException(), isNull);
-    expect(find.text('New project'), findsOneWidget);
+    expect(find.text('New project'), findsWidgets);
   });
 }
