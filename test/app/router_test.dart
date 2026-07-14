@@ -40,8 +40,8 @@ void main() {
       initialLocation: '/project/project-123/edit',
     );
 
-    expect(find.text('Editor'), findsOneWidget);
-    expect(find.textContaining('project-123'), findsOneWidget);
+    expect(find.text('Editor unavailable'), findsOneWidget);
+    expect(find.textContaining('Editor could not open'), findsOneWidget);
   });
 
   testWidgets('shows explicit page for unknown routes', (

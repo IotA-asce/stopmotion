@@ -24,4 +24,4 @@ Android uses application ID `com.iotaasce.stopmotion` with Android 10 as the min
 
 ## Status
 
-Phases 1-3 are implemented: the Flutter foundation, onboarding, durable project library, camera workspace, journaled frame capture, batch import, capture tools, interval mode, and frame review are available. Hosted quality, Android APK, and iOS no-codesign builds pass; physical Android/iOS camera evidence remains open in `docs/DEVELOPMENT_PHASES.md` until the device gates run.
+Phases 1-4 are implemented: the Flutter foundation, onboarding, durable project library, camera workspace, journaled frame capture/import, and transactional timeline editor with playback, selection, frame commands, session undo/redo, and adaptive layouts are available. Hosted quality, Android APK, and iOS no-codesign builds pass; physical Android/iOS camera evidence remains open in `docs/DEVELOPMENT_PHASES.md` until the device gates run.

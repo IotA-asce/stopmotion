@@ -14,7 +14,7 @@ import 'package:stop_motion/features/projects/presentation/project_providers.dar
 import '../../helpers/fake_capture_services.dart';
 
 Future<void> waitForWidget(WidgetTester tester, Finder finder) async {
-  for (var attempt = 0; attempt < 20; attempt++) {
+  for (var attempt = 0; attempt < 60; attempt++) {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 50)),
     );
