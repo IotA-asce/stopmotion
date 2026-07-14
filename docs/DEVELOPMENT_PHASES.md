@@ -132,21 +132,25 @@
 
 **Plan mapping:** Tasks 11-12
 
-- [ ] Define serializable non-destructive frame adjustments.
-- [ ] Implement crop, straighten, rotate, flip, fit, and fill.
-- [ ] Implement exposure, contrast, highlights, shadows, temperature, tint, saturation, and sharpening.
-- [ ] Implement reset-per-control, reset-all, and before/after comparison.
-- [ ] Implement apply-to-frame, selection, and subsequent-frame scopes.
-- [ ] Implement bounded preview rendering and cache invalidation.
-- [ ] Prove source frame bytes never change during editing.
-- [ ] Implement full-screen preview with play, pause, scrub, loop, quality, and control auto-hide.
-- [ ] Preserve route, playhead, orientation, and workspace state when leaving preview.
-- [ ] Add deterministic render fixtures, pixel-tolerance tests, memory tests, semantics tests, and goldens.
+- [x] Define serializable non-destructive frame adjustments.
+- [x] Implement crop, straighten, rotate, flip, fit, and fill.
+- [x] Implement exposure, contrast, highlights, shadows, temperature, tint, saturation, and sharpening.
+- [x] Implement reset-per-control, reset-all, and before/after comparison.
+- [x] Implement apply-to-frame, selection, and subsequent-frame scopes.
+- [x] Implement bounded preview rendering and cache invalidation.
+- [x] Prove source frame bytes never change during editing.
+- [x] Implement full-screen preview with play, pause, scrub, loop, quality, and control auto-hide.
+- [x] Preserve route, playhead, orientation, and workspace state when leaving preview.
+- [x] Add deterministic render fixtures, pixel-tolerance tests, memory tests, semantics tests, and goldens.
 
 **Phase gate:**
 
-- [ ] Preview and rendered fixtures match the current timeline and edit instructions.
+- [x] Preview and rendered fixtures match the current timeline and edit instructions.
 - [ ] Full-resolution editing stays within the baseline-device memory budget.
+
+**Phase 5 evidence:** Adjustment JSON round trips through the database migration, deterministic image fixtures verify dimensions and source immutability, the byte-bounded LRU cache is covered, and preview/controller/widget tests cover timing, controls, accessibility scaling, and route-owned state.
+
+**Physical-device blocker:** The renderer bounds working images and preview cache memory in automated tests. Peak resident memory at full resolution still requires profiling on the recorded baseline Android and iOS devices.
 
 ## Phase 6: Audio Recording, Editing, And Playback
 

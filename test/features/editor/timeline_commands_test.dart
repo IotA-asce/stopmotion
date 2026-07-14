@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stop_motion/features/editor/domain/frame.dart';
+import 'package:stop_motion/features/editor/domain/frame_adjustments.dart';
 import 'package:stop_motion/features/editor/domain/timeline.dart';
 import 'package:stop_motion/features/editor/domain/timeline_command.dart';
 
@@ -53,6 +54,38 @@ void main() {
     expect(
       () => SetFrameHoldCommand(<String>{'a'}, 0).apply(timeline),
       throwsRangeError,
+    );
+  });
+
+  test('adjustments apply to frame, selection, or subsequent scopes', () {
+    final TimelineSnapshot timeline = TimelineSnapshot(
+      frames: <ProjectFrame>[frame('a'), frame('b'), frame('c'), frame('d')],
+      fps: 12,
+    );
+    const FrameAdjustments value = FrameAdjustments(exposure: 1);
+    final TimelineSnapshot selected = UpdateFrameAdjustmentsCommand(
+      targetFrameId: 'b',
+      selectionIds: <String>{'a', 'c'},
+      adjustments: value,
+      scope: AdjustmentScope.selection,
+    ).apply(timeline);
+    expect(
+      selected.frames
+          .where((ProjectFrame frame) => frame.adjustments.exposure == 1)
+          .map((ProjectFrame frame) => frame.id),
+      <String>['a', 'c'],
+    );
+    final TimelineSnapshot subsequent = UpdateFrameAdjustmentsCommand(
+      targetFrameId: 'c',
+      selectionIds: const <String>{},
+      adjustments: value,
+      scope: AdjustmentScope.subsequent,
+    ).apply(timeline);
+    expect(
+      subsequent.frames
+          .where((ProjectFrame frame) => frame.adjustments.exposure == 1)
+          .map((ProjectFrame frame) => frame.id),
+      <String>['c', 'd'],
     );
   });
 }

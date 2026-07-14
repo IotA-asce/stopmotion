@@ -11,6 +11,7 @@ import '../../../core/media/image_validation_service.dart';
 import '../../../core/recovery/operation.dart';
 import '../../../core/recovery/operation_journal.dart';
 import '../../editor/domain/frame.dart';
+import '../../editor/domain/frame_adjustments.dart';
 import '../../projects/data/project_thumbnail_repository.dart';
 import '../domain/capture_frame.dart';
 
@@ -224,6 +225,7 @@ class CaptureRepository {
               createdAt: now,
               sourceWidth: source.sourceWidth,
               sourceHeight: source.sourceHeight,
+              adjustmentsJson: Value<String>(source.adjustmentsJson),
             ),
           );
       await _incrementProjectRevision(projectId, now);
@@ -295,6 +297,7 @@ class CaptureRepository {
               sourceWidth: frame.sourceWidth,
               sourceHeight: frame.sourceHeight,
               missing: Value<bool>(frame.missing),
+              adjustmentsJson: Value<String>(frame.adjustments.encode()),
             ),
           );
       await _incrementProjectRevision(frame.projectId, _now());
@@ -425,6 +428,7 @@ class CaptureRepository {
     sourceWidth: row.sourceWidth,
     sourceHeight: row.sourceHeight,
     missing: row.missing,
+    adjustments: FrameAdjustments.decode(row.adjustmentsJson),
   );
 }
 

@@ -7,6 +7,7 @@ import '../../projects/data/project_repository.dart';
 import '../../projects/domain/project.dart';
 import '../data/editor_repository.dart';
 import '../domain/frame.dart';
+import '../domain/frame_adjustments.dart';
 import '../domain/timeline.dart';
 import '../domain/timeline_command.dart';
 
@@ -189,6 +190,19 @@ class EditorController extends ChangeNotifier {
   );
 
   Future<void> setFps(int fps) => _apply(SetFramesPerSecondCommand(fps));
+
+  Future<void> applyAdjustments({
+    required String frameId,
+    required FrameAdjustments adjustments,
+    required AdjustmentScope scope,
+  }) => _apply(
+    UpdateFrameAdjustmentsCommand(
+      targetFrameId: frameId,
+      selectionIds: _state.selection?.ids ?? <String>{frameId},
+      adjustments: adjustments,
+      scope: scope,
+    ),
+  );
 
   Future<void> reorder(int oldIndex, int newIndex) async {
     final TimelineSnapshot? timeline = _state.timeline;

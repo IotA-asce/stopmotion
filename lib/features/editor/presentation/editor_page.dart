@@ -6,13 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../core/media/frame_renderer.dart';
 import '../../../core/widgets/app_error_view.dart';
 import '../../projects/presentation/project_providers.dart';
 import '../domain/frame.dart';
+import '../domain/frame_adjustments.dart';
 import '../domain/timeline.dart';
 import 'editor_controller.dart';
 import 'editor_providers.dart';
 import 'frame_action_menu.dart';
+import 'frame_inspector.dart';
 import 'frame_timeline.dart';
 import 'preview_canvas.dart';
 import 'transport_controls.dart';
@@ -54,6 +57,7 @@ class EditorPage extends ConsumerWidget {
     File resolveFrame(ProjectFrame frame) => ref
         .read(projectPathsProvider)
         .resolveRelativeFile(frame.relativeSourcePath);
+    final FramePreviewCache previewCache = ref.read(framePreviewCacheProvider);
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.keyZ, meta: true):
@@ -144,11 +148,19 @@ class EditorPage extends ConsumerWidget {
                       controller: controller,
                       state: state,
                       resolveFrame: resolveFrame,
+                      cache: previewCache,
                     );
                     final Widget timeline = _TimelineRegion(
                       controller: controller,
                       state: state,
                       resolveFrame: resolveFrame,
+                      onAdjust: () => _inspect(
+                        context,
+                        controller,
+                        state,
+                        resolveFrame,
+                        previewCache,
+                      ),
                     );
                     return wide
                         ? Row(
@@ -277,6 +289,38 @@ class EditorPage extends ConsumerWidget {
       await controller.setHold(result);
     }
   }
+
+  Future<void> _inspect(
+    BuildContext context,
+    EditorController controller,
+    EditorViewState state,
+    File Function(ProjectFrame frame) resolveFrame,
+    FramePreviewCache cache,
+  ) async {
+    final TimelineSnapshot timeline = state.timeline!;
+    if (timeline.isEmpty) {
+      return;
+    }
+    final ProjectFrame frame = timeline
+        .frames[state.playheadIndex.clamp(0, timeline.frames.length - 1)];
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (BuildContext context) => FrameInspector(
+        frame: frame,
+        source: resolveFrame(frame),
+        cache: cache,
+        backgroundColor: state.project!.backgroundColorValue,
+        onApply: (FrameAdjustments adjustments, AdjustmentScope scope) =>
+            controller.applyAdjustments(
+              frameId: frame.id,
+              adjustments: adjustments,
+              scope: scope,
+            ),
+      ),
+    );
+  }
 }
 
 class _PreviewRegion extends StatelessWidget {
@@ -284,11 +328,13 @@ class _PreviewRegion extends StatelessWidget {
     required this.controller,
     required this.state,
     required this.resolveFrame,
+    required this.cache,
   });
 
   final EditorController controller;
   final EditorViewState state;
   final File Function(ProjectFrame frame) resolveFrame;
+  final FramePreviewCache cache;
 
   @override
   Widget build(BuildContext context) {
@@ -306,6 +352,7 @@ class _PreviewRegion extends StatelessWidget {
             project: state.project!,
             frame: frame,
             resolveFrame: resolveFrame,
+            cache: cache,
           ),
         ),
         TransportControls(controller: controller, state: state),
@@ -319,11 +366,13 @@ class _TimelineRegion extends StatelessWidget {
     required this.controller,
     required this.state,
     required this.resolveFrame,
+    required this.onAdjust,
   });
 
   final EditorController controller;
   final EditorViewState state;
   final File Function(ProjectFrame frame) resolveFrame;
+  final VoidCallback onAdjust;
 
   @override
   Widget build(BuildContext context) {
@@ -352,6 +401,11 @@ class _TimelineRegion extends StatelessWidget {
                   icon: const Icon(Icons.speed),
                 ),
                 IconButton(
+                  tooltip: 'Adjust frame',
+                  onPressed: state.timeline!.isEmpty ? null : onAdjust,
+                  icon: const Icon(Icons.tune),
+                ),
+                IconButton(
                   tooltip: 'Capture frames',
                   onPressed: () =>
                       context.push(AppRoutes.capture(controller.projectId)),
@@ -368,7 +422,8 @@ class _TimelineRegion extends StatelessWidget {
                   onPressed: state.timeline!.isEmpty
                       ? null
                       : () => context.push(
-                          AppRoutes.preview(controller.projectId),
+                          '${AppRoutes.preview(controller.projectId)}'
+                          '?frame=${state.playheadIndex}',
                         ),
                   icon: const Icon(Icons.fullscreen),
                 ),

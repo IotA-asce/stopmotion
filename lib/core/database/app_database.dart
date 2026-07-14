@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,6 +47,9 @@ class AppDatabase extends _$AppDatabase {
       await transaction(() async {
         if (from > to) {
           throw StateError('Database downgrades are not supported.');
+        }
+        if (from < 2) {
+          await migrator.addColumn(frameRecords, frameRecords.adjustmentsJson);
         }
       });
     },

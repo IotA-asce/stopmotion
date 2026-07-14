@@ -242,6 +242,7 @@ class ProjectRepository {
                   sourceWidth: frame.sourceWidth,
                   sourceHeight: frame.sourceHeight,
                   missing: Value<bool>(frame.missing),
+                  adjustmentsJson: Value<String>(frame.adjustmentsJson),
                 ),
               );
         }

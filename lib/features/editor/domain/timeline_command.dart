@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import 'frame.dart';
+import 'frame_adjustments.dart';
 import 'timeline.dart';
 
 abstract interface class TimelineCommand {
@@ -149,4 +150,41 @@ class SetFramesPerSecondCommand implements TimelineCommand {
   @override
   TimelineSnapshot apply(TimelineSnapshot timeline) =>
       timeline.copyWith(fps: fps);
+}
+
+class UpdateFrameAdjustmentsCommand implements TimelineCommand {
+  const UpdateFrameAdjustmentsCommand({
+    required this.targetFrameId,
+    required this.selectionIds,
+    required this.adjustments,
+    required this.scope,
+  });
+
+  final String targetFrameId;
+  final Set<String> selectionIds;
+  final FrameAdjustments adjustments;
+  final AdjustmentScope scope;
+
+  @override
+  TimelineSnapshot apply(TimelineSnapshot timeline) {
+    final int target = timeline.frames.indexWhere(
+      (ProjectFrame frame) => frame.id == targetFrameId,
+    );
+    if (target < 0) {
+      return timeline;
+    }
+    bool applies(ProjectFrame frame, int index) => switch (scope) {
+      AdjustmentScope.frame => frame.id == targetFrameId,
+      AdjustmentScope.selection => selectionIds.contains(frame.id),
+      AdjustmentScope.subsequent => index >= target,
+    };
+    return timeline.copyWith(
+      frames: <ProjectFrame>[
+        for (var index = 0; index < timeline.frames.length; index++)
+          applies(timeline.frames[index], index)
+              ? timeline.frames[index].copyWith(adjustments: adjustments)
+              : timeline.frames[index],
+      ],
+    );
+  }
 }

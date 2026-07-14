@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables.dart';
 import '../domain/frame.dart';
+import '../domain/frame_adjustments.dart';
 import '../domain/timeline.dart';
 
 class EditorCommitResult {
@@ -85,6 +86,7 @@ class EditorRepository {
             FrameRecordsCompanion(
               position: Value<int>(frame.position),
               holdFrames: Value<int>(frame.holdFrames),
+              adjustmentsJson: Value<String>(frame.adjustments.encode()),
             ),
           );
         } else {
@@ -101,6 +103,7 @@ class EditorRepository {
                   sourceWidth: frame.sourceWidth,
                   sourceHeight: frame.sourceHeight,
                   missing: Value<bool>(frame.missing),
+                  adjustmentsJson: Value<String>(frame.adjustments.encode()),
                 ),
               );
         }
@@ -126,7 +129,8 @@ class EditorRepository {
         final ProjectFrame actual = verified.frames[index];
         final ProjectFrame expected = timeline.frames[index];
         if (actual.id != expected.id ||
-            actual.holdFrames != expected.holdFrames) {
+            actual.holdFrames != expected.holdFrames ||
+            actual.adjustments.cacheKey != expected.adjustments.cacheKey) {
           throw StateError('Timeline ordering verification failed.');
         }
       }
@@ -144,5 +148,6 @@ class EditorRepository {
     sourceWidth: row.sourceWidth,
     sourceHeight: row.sourceHeight,
     missing: row.missing,
+    adjustments: FrameAdjustments.decode(row.adjustmentsJson),
   );
 }
