@@ -12,12 +12,24 @@ import '../features/preview/presentation/preview_page.dart';
 import '../features/projects/presentation/create_project_page.dart';
 import '../features/projects/presentation/projects_page.dart';
 import '../features/recovery/presentation/recovery_page.dart';
+import '../features/settings/presentation/accessibility_settings_page.dart';
+import '../features/settings/presentation/capture_defaults_page.dart';
+import '../features/settings/presentation/export_defaults_page.dart';
+import '../features/settings/presentation/information_pages.dart';
 import '../features/settings/presentation/settings_page.dart';
+import '../features/settings/presentation/storage_settings_page.dart';
 
 abstract final class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String projects = '/projects';
   static const String settings = '/settings';
+  static const String settingsCapture = '/settings/capture';
+  static const String settingsExport = '/settings/export';
+  static const String settingsAccessibility = '/settings/accessibility';
+  static const String settingsStorage = '/settings/storage';
+  static const String settingsPrivacy = '/settings/privacy';
+  static const String settingsHelp = '/settings/help';
+  static const String settingsAbout = '/settings/about';
   static const String recovery = '/recovery';
 
   static String capture(String projectId) => '/project/$projectId/capture';
@@ -68,6 +80,41 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.projects}) {
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return const NoTransitionPage<void>(child: SettingsPage());
                 },
+              ),
+              GoRoute(
+                path: AppRoutes.settingsCapture,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const CaptureDefaultsPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsExport,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const ExportDefaultsPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsAccessibility,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const AccessibilitySettingsPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsStorage,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const StorageSettingsPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsPrivacy,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const PrivacyPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsHelp,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const HelpPage(),
+              ),
+              GoRoute(
+                path: AppRoutes.settingsAbout,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const AboutPage(),
               ),
             ],
           ),

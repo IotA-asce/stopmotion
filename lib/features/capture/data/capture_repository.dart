@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables.dart';
+import '../../../core/diagnostics/app_logger.dart';
 import '../../../core/filesystem/atomic_file_store.dart';
 import '../../../core/filesystem/project_paths.dart';
 import '../../../core/media/image_validation_service.dart';
@@ -25,6 +26,7 @@ class CaptureRepository {
     ImageValidationService imageValidation = const ImageValidationService(),
     Uuid uuid = const Uuid(),
     DateTime Function()? now,
+    AppLogger? logger,
   }) : this._(
          database,
          paths,
@@ -34,6 +36,7 @@ class CaptureRepository {
          imageValidation,
          uuid,
          now ?? _utcNow,
+         logger,
        );
 
   CaptureRepository._(
@@ -45,6 +48,7 @@ class CaptureRepository {
     this._imageValidation,
     this._uuid,
     this._now,
+    this._logger,
   );
 
   final AppDatabase _database;
@@ -55,6 +59,7 @@ class CaptureRepository {
   final ImageValidationService _imageValidation;
   final Uuid _uuid;
   final DateTime Function() _now;
+  final AppLogger? _logger;
 
   static DateTime _utcNow() => DateTime.now().toUtc();
 
@@ -322,6 +327,7 @@ class CaptureRepository {
       temporaryPath: _paths.relativeToRoot(temporary),
       finalPath: _paths.relativeToRoot(destination),
     );
+    await _log('started', journalId, 'pending');
     ValidatedImage? normalized;
     try {
       final File accepted = await _fileStore.accept(
@@ -337,6 +343,7 @@ class CaptureRepository {
         },
       );
       await _journal.setState(journalId, OperationState.mediaReady);
+      await _log('media_ready', journalId, 'media_ready');
       return _PreparedMedia(
         frameId: frameId,
         journalId: journalId,
@@ -349,6 +356,7 @@ class CaptureRepository {
         OperationState.failed,
         errorCode: error.runtimeType.toString(),
       );
+      await _log('failed', journalId, 'failed');
       rethrow;
     }
   }
@@ -382,6 +390,7 @@ class CaptureRepository {
     }
     try {
       await _journal.setState(prepared.journalId, OperationState.complete);
+      await _log('completed', prepared.journalId, 'complete');
     } on Object {
       // Launch recovery can reconcile a committed operation journal later.
     }
@@ -399,6 +408,22 @@ class CaptureRepository {
       OperationState.failed,
       errorCode: error.runtimeType.toString(),
     );
+    await _log('failed', prepared.journalId, 'failed');
+  }
+
+  Future<void> _log(String action, String operationId, String status) async {
+    final AppLogger? logger = _logger;
+    if (logger == null) return;
+    try {
+      await logger.log(
+        category: 'capture',
+        action: action,
+        operationId: operationId,
+        attributes: <String, Object?>{'status': status},
+      );
+    } on Object {
+      // Diagnostics must not affect durable media acceptance.
+    }
   }
 
   Future<void> _incrementProjectRevision(String projectId, DateTime now) async {

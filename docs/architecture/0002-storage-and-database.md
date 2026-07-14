@@ -15,6 +15,7 @@ The product contract requires atomic media acceptance, relational integrity, mig
 ## Consequences
 
 - Multi-step filesystem and database work uses an operation journal and idempotent recovery.
+- Before a file-backed database opens, retain a last-known snapshot alongside it. Launch verifies integrity, restores that snapshot only when the active database cannot be opened safely, and never resets project data silently.
 - Repository tests use `NativeDatabase.memory()` with synchronous stream closure.
 - Migration tests retain versioned schema fixtures.
 - Source files are never deleted while referenced by a frame or pending journal.

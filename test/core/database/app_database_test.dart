@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stop_motion/core/database/app_database.dart';
 import 'package:stop_motion/core/database/migrations.dart';
@@ -81,5 +83,35 @@ void main() {
     );
 
     expect(await database.select(database.projectRecords).get(), isEmpty);
+  });
+
+  test('file-backed opening retains a pre-open database snapshot', () async {
+    final Directory directory = await Directory.systemTemp.createTemp(
+      'stop_motion_database_backup_',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+    final File file = File('${directory.path}/stop_motion.sqlite');
+    final AppDatabase first = AppDatabase.open(file);
+    await first
+        .into(first.projectRecords)
+        .insert(
+          ProjectRecordsCompanion.insert(
+            id: 'project',
+            title: 'Film',
+            aspectRatio: 'widescreen',
+            resolution: 'fullHd1080',
+            framesPerSecond: 12,
+            backgroundColor: 0,
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+            status: 'draft',
+          ),
+        );
+    await first.close();
+
+    final AppDatabase reopened = AppDatabase.open(file);
+    addTearDown(reopened.close);
+    expect(await reopened.select(reopened.projectRecords).get(), hasLength(1));
+    expect(await File('${file.path}.backup').exists(), isTrue);
   });
 }

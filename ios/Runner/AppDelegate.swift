@@ -12,5 +12,23 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    let storageChannel = FlutterMethodChannel(
+      name: "stop_motion/storage",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    storageChannel.setMethodCallHandler { call, result in
+      guard call.method == "availableStorageBytes" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      do {
+        let values = try FileManager.default.attributesOfFileSystem(
+          forPath: NSHomeDirectory()
+        )
+        result((values[.systemFreeSize] as? NSNumber)?.int64Value)
+      } catch {
+        result(nil)
+      }
+    }
   }
 }

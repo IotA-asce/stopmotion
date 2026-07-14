@@ -122,6 +122,7 @@ class CaptureController extends ChangeNotifier {
     required CaptureStorageGuard storageGuard,
     CaptureScheduler scheduler = const DartCaptureScheduler(),
     CaptureFeedback feedback = const NoopCaptureFeedback(),
+    CaptureViewState initialState = const CaptureViewState(),
     VoidCallback? onAccepted,
   }) : this._(
          projectId,
@@ -134,6 +135,7 @@ class CaptureController extends ChangeNotifier {
          storageGuard,
          scheduler,
          feedback,
+         initialState,
          onAccepted ?? _noop,
        );
 
@@ -148,6 +150,7 @@ class CaptureController extends ChangeNotifier {
     this._storageGuard,
     this._scheduler,
     this._feedback,
+    this._state,
     this._onAccepted,
   );
 
@@ -169,7 +172,7 @@ class CaptureController extends ChangeNotifier {
   var _disposed = false;
   var _captureActive = false;
   Completer<void>? _captureSettled;
-  CaptureViewState _state = const CaptureViewState();
+  CaptureViewState _state;
 
   CaptureViewState get state => _state;
   CameraService get camera => _camera;

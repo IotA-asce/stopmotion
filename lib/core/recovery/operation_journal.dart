@@ -59,8 +59,10 @@ class OperationJournalRepository {
     final SimpleSelectStatement<OperationJournals, OperationJournal> query =
         _database.select(_database.operationJournals)
           ..where(
-            (OperationJournals table) =>
-                table.state.isNotValue(domain.OperationState.complete.name),
+            (OperationJournals table) => table.state.isNotIn(<String>[
+              domain.OperationState.complete.name,
+              domain.OperationState.recovered.name,
+            ]),
           )
           ..orderBy(<OrderingTerm Function(OperationJournals)>[
             (OperationJournals table) => OrderingTerm.asc(table.createdAt),
@@ -69,6 +71,25 @@ class OperationJournalRepository {
       (List<OperationJournal> rows) => rows.map(_map).toList(growable: false),
     );
   }
+
+  Future<List<domain.Operation>> listIncomplete() async {
+    final SimpleSelectStatement<OperationJournals, OperationJournal> query =
+        _database.select(_database.operationJournals)
+          ..where(
+            (OperationJournals table) => table.state.isNotIn(<String>[
+              domain.OperationState.complete.name,
+              domain.OperationState.recovered.name,
+            ]),
+          )
+          ..orderBy(<OrderingTerm Function(OperationJournals)>[
+            (OperationJournals table) => OrderingTerm.asc(table.createdAt),
+          ]);
+    final List<OperationJournal> rows = await query.get();
+    return rows.map(_map).toList(growable: false);
+  }
+
+  Future<void> markRecovered(String id, {String? errorCode}) =>
+      setState(id, domain.OperationState.recovered, errorCode: errorCode);
 
   domain.Operation _map(OperationJournal row) => domain.Operation(
     id: row.id,

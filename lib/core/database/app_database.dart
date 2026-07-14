@@ -23,6 +23,7 @@ class AppDatabase extends _$AppDatabase {
     : super(
         LazyDatabase(() async {
           await databaseFile.parent.create(recursive: true);
+          await _backupBeforeOpen(databaseFile);
           return NativeDatabase.createInBackground(databaseFile);
         }),
       );
@@ -37,6 +38,24 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 4;
+
+  static Future<void> _backupBeforeOpen(File databaseFile) async {
+    if (!await databaseFile.exists() || await databaseFile.length() == 0) {
+      return;
+    }
+    final File backup = File('${databaseFile.path}.backup');
+    await databaseFile.copy(backup.path);
+  }
+
+  static Future<bool> restoreBackup(File databaseFile) async {
+    final File backup = File('${databaseFile.path}.backup');
+    if (!await backup.exists() || await backup.length() == 0) {
+      return false;
+    }
+    await databaseFile.parent.create(recursive: true);
+    await backup.copy(databaseFile.path);
+    return true;
+  }
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

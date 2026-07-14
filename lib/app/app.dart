@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/settings/domain/app_settings.dart';
+import '../features/settings/presentation/settings_providers.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -11,9 +15,26 @@ final appThemeModeProvider = NotifierProvider<AppThemeMode, ThemeMode>(
 
 class AppThemeMode extends Notifier<ThemeMode> {
   @override
-  ThemeMode build() => ThemeMode.system;
+  ThemeMode build() => themeModeFor(ref.watch(appSettingsProvider).appearance);
 
-  void setThemeMode(ThemeMode mode) => state = mode;
+  void setThemeMode(ThemeMode mode) {
+    state = mode;
+    unawaited(
+      ref
+          .read(appSettingsProvider.notifier)
+          .update(
+            ref
+                .read(appSettingsProvider)
+                .copyWith(
+                  appearance: switch (mode) {
+                    ThemeMode.system => AppAppearance.system,
+                    ThemeMode.light => AppAppearance.light,
+                    ThemeMode.dark => AppAppearance.dark,
+                  },
+                ),
+          ),
+    );
+  }
 }
 
 class StopMotionApp extends ConsumerStatefulWidget {
@@ -39,6 +60,7 @@ class _StopMotionAppState extends ConsumerState<StopMotionApp> {
   @override
   Widget build(BuildContext context) {
     final ThemeMode themeMode = ref.watch(appThemeModeProvider);
+    final AppSettings settings = ref.watch(appSettingsProvider);
 
     return MaterialApp.router(
       title: 'Stop Motion',
@@ -48,6 +70,18 @@ class _StopMotionAppState extends ConsumerState<StopMotionApp> {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
       routerConfig: _router,
+      builder: (BuildContext context, Widget? child) {
+        final MediaQueryData media = MediaQuery.of(context);
+        final bool disableAnimations = switch (settings.reducedMotion) {
+          ReducedMotionPreference.on => true,
+          ReducedMotionPreference.off => false,
+          ReducedMotionPreference.system => media.disableAnimations,
+        };
+        return MediaQuery(
+          data: media.copyWith(disableAnimations: disableAnimations),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

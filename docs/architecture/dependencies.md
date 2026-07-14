@@ -19,7 +19,7 @@
 | `drift` | `^2.34.2` | simonbinder.eu | Typed SQLite schema, transactions, migrations, and watched queries | Context7 Drift documentation |
 | `path` | `^1.9.1` | dart.dev | Portable project-owned relative paths | Dart package API and locked resolution |
 | `path_provider` | `^2.1.6` | flutter.dev | Application support and disposable cache roots | Context7 Flutter packages documentation |
-| `shared_preferences` | `^2.5.5` | flutter.dev | Small onboarding completion preference | Context7 Flutter packages documentation |
+| `shared_preferences` | `^2.5.5` | flutter.dev | Onboarding completion plus small persistent user settings through `SharedPreferencesAsync` | Context7 Flutter packages documentation |
 | `uuid` | `^4.5.3` | Dart community | Collision-resistant local entity and journal IDs | Package API and locked resolution |
 | `image` | `^4.9.1` | Brendan Duncan | Validated decoding plus bounded non-destructive crop, transform, color, sharpening, fit/fill, preview, and thumbnail rendering | Context7 `/brendan-duncan/image` 4.9 documentation |
 | `camera` | `^0.12.0+2` | flutter.dev | Camera preview, JPEG capture, focus/exposure, zoom, flash, and camera switching behind `CameraService` | Context7 `/websites/pub_dev_packages_camera` documentation |

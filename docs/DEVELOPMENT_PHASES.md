@@ -182,7 +182,7 @@
 - [x] Evaluate export engines for compatibility, maintenance, licensing, package size, progress, and cancellation.
 - [ ] Prove H.264/AAC MP4 output on physical Android and iOS devices before selecting the final engine.
 - [x] Implement export preflight for missing sources, dimensions, codecs, and storage.
-- [ ] Implement journaled export jobs, progress, cancellation, cleanup, and interruption recovery.
+- [x] Implement journaled export jobs, progress, cancellation, cleanup, and interruption recovery.
 - [x] Implement 720p and 1080p MP4 rendering from current sources and edits.
 - [x] Implement AAC mixing and audio synchronization in MP4 output.
 - [x] Implement bounded-memory GIF export with timing and loop settings.
@@ -203,21 +203,23 @@
 
 **Plan mapping:** Tasks 18-19
 
-- [ ] Implement launch-time consistency and operation-journal scanning.
-- [ ] Implement Recovery screen actions: repair, remove missing items, keep for later, and export diagnostics.
-- [ ] Implement recovery for interrupted capture, import, duplicate, delete, migration, and export.
-- [ ] Implement storage categories, low-space monitoring, cache clearing, trash expiry, restore, and empty trash.
-- [ ] Implement capture defaults and export defaults.
-- [ ] Implement appearance, reduced motion, high-contrast timeline, haptics, and keep-awake settings.
-- [ ] Implement privacy, help, troubleshooting, support, licenses, app version, and diagnostics pages.
-- [ ] Implement bounded structured logs with redaction and operation IDs.
-- [ ] Implement diagnostic export that excludes project content and private paths.
-- [ ] Add fault-injection, process-death, disk-full, settings, storage, privacy, and redaction tests.
+- [x] Implement launch-time consistency and operation-journal scanning.
+- [x] Implement Recovery screen actions: repair, remove missing items, keep for later, and export diagnostics.
+- [x] Implement recovery for interrupted capture, import, duplicate, delete, migration, and export.
+- [x] Implement storage categories, low-space monitoring, cache clearing, trash expiry, restore, and empty trash.
+- [x] Implement capture defaults and export defaults.
+- [x] Implement appearance, reduced motion, high-contrast timeline, haptics, and keep-awake settings.
+- [x] Implement privacy, help, troubleshooting, support, licenses, app version, and diagnostics pages.
+- [x] Implement bounded structured logs with redaction and operation IDs.
+- [x] Implement diagnostic export that excludes project content and private paths.
+- [x] Add fault-injection, process-death, disk-full, settings, storage, privacy, and redaction tests.
 
 **Phase gate:**
 
-- [ ] Every known interrupted-operation state has an explicit, idempotent, non-destructive recovery result.
-- [ ] Diagnostics are useful while containing no frame, audio, project-title, secret, or private-path data.
+- [x] Every known interrupted-operation state has an explicit, idempotent, non-destructive recovery result.
+- [x] Diagnostics are useful while containing no frame, audio, project-title, secret, or private-path data.
+
+**Phase 8 evidence:** Launch performs SQLite integrity verification, scans incomplete operation journals, retains a pre-open database snapshot, and directs unresolved work to Recovery. Recovery finalizes referenced durable media, preserves unreferenced valid media for review, explicitly repairs duplicated/deleted project states, cleans only abandoned temporary or derived partial output, marks missing sources, and requires confirmation before removing missing records or finishing permanent deletion. Settings persist through `SharedPreferencesAsync`; storage is measured through Android/iOS platform channels; diagnostics ZIP tests prove titles, media names, and private paths are excluded. Physical process-kill and disk-full drills remain Phase 9 device-matrix evidence, but their equivalent journal, restart, and low-space contracts are covered in automated tests.
 
 ## Phase 9: Accessibility, Adaptation, Performance, And Compliance
 
