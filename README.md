@@ -9,5 +9,4 @@ The repository is being rebuilt from a release specification before implementati
 
 ## Status
 
-Repository initialized. First-public-release planning is in progress.
-
+Repository initialized. The first-public-release product contract and implementation plan are ready; application implementation has not started.
