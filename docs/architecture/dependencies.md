@@ -16,6 +16,20 @@
 | --- | --- | --- | --- | --- |
 | `flutter_riverpod` | `^3.3.2` | Riverpod | Dependency injection and state ownership | Context7 Riverpod 3.3 docs |
 | `go_router` | `^17.3.0` | flutter.dev | URL routing and stateful shell | Context7 and pub.dev |
+| `drift` | `^2.34.2` | simonbinder.eu | Typed SQLite schema, transactions, migrations, and watched queries | Context7 Drift documentation |
+| `path` | `^1.9.1` | dart.dev | Portable project-owned relative paths | Dart package API and locked resolution |
+| `path_provider` | `^2.1.6` | flutter.dev | Application support and disposable cache roots | Context7 Flutter packages documentation |
+| `shared_preferences` | `^2.5.5` | flutter.dev | Small onboarding completion preference | Context7 Flutter packages documentation |
+| `uuid` | `^4.5.3` | Dart community | Collision-resistant local entity and journal IDs | Package API and locked resolution |
+| `image` | `^4.9.1` | Brendan Duncan | Validated image decoding, EXIF orientation, and bounded JPEG thumbnails | Context7 `/brendan-duncan/image` documentation |
+
+## Development Packages
+
+| Package | Constraint | Purpose |
+| --- | --- | --- |
+| `build_runner` | `^2.15.1` | Repeatable source generation |
+| `drift_dev` | `^2.34.0` | Drift table and database generation |
+| `flutter_lints` | `^6.0.0` | Baseline analyzer rules extended by `analysis_options.yaml` |
 
 Phase-specific packages are added only on the branch that implements them. `pubspec.lock` is committed so application builds resolve the tested versions.
 

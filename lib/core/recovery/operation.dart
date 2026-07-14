@@ -1,0 +1,29 @@
+enum OperationType { capture, import, duplicateProject, deleteProject, export }
+
+enum OperationState { pending, mediaReady, databaseCommitted, complete, failed }
+
+class Operation {
+  const Operation({
+    required this.id,
+    required this.type,
+    required this.state,
+    required this.projectId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.destinationProjectId,
+    this.temporaryPath,
+    this.finalPath,
+    this.errorCode,
+  });
+
+  final String id;
+  final OperationType type;
+  final OperationState state;
+  final String projectId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? destinationProjectId;
+  final String? temporaryPath;
+  final String? finalPath;
+  final String? errorCode;
+}

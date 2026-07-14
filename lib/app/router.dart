@@ -5,6 +5,7 @@ import '../core/widgets/app_error_view.dart';
 import '../core/widgets/app_scaffold.dart';
 import '../core/widgets/feature_boundary_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
+import '../features/projects/presentation/create_project_page.dart';
 import '../features/projects/presentation/projects_page.dart';
 import '../features/recovery/presentation/recovery_page.dart';
 import '../features/settings/presentation/settings_page.dart';
@@ -77,6 +78,11 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.projects}) {
         path: AppRoutes.recovery,
         builder: (BuildContext context, GoRouterState state) =>
             const RecoveryPage(),
+      ),
+      GoRoute(
+        path: '/projects/new',
+        builder: (BuildContext context, GoRouterState state) =>
+            const CreateProjectPage(),
       ),
       _workspaceRoute('capture', 'Capture', 3),
       _workspaceRoute('edit', 'Editor', 4),
